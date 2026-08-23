@@ -43,8 +43,18 @@ def load_rows(path: str | Path, keep_failed: bool = False) -> list[dict]:
 
 
 def iter_raw(path: str | Path):
-    """Every line as written, including duplicates -- tolerates a torn last line."""
-    with Path(path).open(encoding="utf-8") as fh:
+    """Every line as written, including duplicates -- tolerates a torn last line.
+
+    Reads .jsonl or .jsonl.gz. The working file stays uncompressed because the
+    run appends to it; the committed snapshot is gzipped, at ~17x smaller.
+    """
+    path = Path(path)
+    if path.suffix == ".gz":
+        import gzip
+        opener = lambda: gzip.open(path, "rt", encoding="utf-8")  # noqa: E731
+    else:
+        opener = lambda: path.open(encoding="utf-8")  # noqa: E731
+    with opener() as fh:
         for line in fh:
             line = line.strip()
             if not line:

@@ -12,6 +12,12 @@ data/raw/*
 artifacts/*/*
 !artifacts/*/.gitkeep
 
+# captions ARE committed, gzipped: 181 MB -> 10.6 MB, and they cannot be
+# regenerated (temperature 1.0), so the code alone does not reproduce them
+!artifacts/captions/*/
+artifacts/captions/*/*
+!artifacts/captions/*/*.jsonl.gz
+
 # raw ImageNet bbox XML — re-downloadable, thousands of tiny files
 data/annotations/*
 !data/annotations/.gitkeep
