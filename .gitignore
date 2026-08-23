@@ -5,12 +5,32 @@ venv/
 __pycache__/
 *.py[cod]
 .ipynb_checkpoints/
-data/
-outputs/
+# images and derived artifacts live on the server, not in git —
+# keep the folder skeleton, ignore the contents
+data/raw/*
+!data/raw/.gitkeep
+artifacts/*/*
+!artifacts/*/.gitkeep
+
+# raw ImageNet bbox XML — re-downloadable, thousands of tiny files
+data/annotations/*
+!data/annotations/.gitkeep
+
+# run output, not data
+logs/
+nohup.out
+
+# data/manifest/ IS tracked on purpose: small csv, makes runs reproducible
+#   (incl. the parsed + rescaled ground-truth boxes)
+# results/ IS tracked on purpose: metrics + figures for the thesis
+
 *.ckpt
 *.pt
 *.pth
+*.npy
 *.npz
+*.parquet
+*.pkl
 .env
 .env.*
 !.env.example

@@ -1,0 +1,11 @@
+pair,class,wnid,words,images,bbox_xml,bbox_usable,bbox_pct,captions,caption_pct,with_title,with_tags,tag_pct,with_desc,tag_tokens,uniq_tags,avg_tags,task_classify,task_bbox_iou,task_tag_compare,task_bbox_and_tags
+acousticguitar_violin,acousticguitar,n02676566,acoustic guitar,2017,541,511,25%,565,28%,564,557,28%,404,4165,1651,7.5,2017,511,557,178
+acousticguitar_violin,violin,n04536866,"violin, fiddle",1330,475,431,32%,514,39%,509,503,38%,307,3700,1722,7.4,1330,431,503,232
+ambulance_firetruck,ambulance,n02701002,ambulance,1510,513,474,31%,270,18%,270,266,18%,190,2401,1188,9.0,1510,474,266,169
+ambulance_firetruck,firetruck,n03345487,"fire engine, fire truck",1356,500,462,34%,508,37%,508,508,37%,308,3968,1597,7.8,1356,462,508,261
+ant_bee,ant,n02219486,"ant, emmet, pismire",1656,450,412,25%,671,41%,668,671,41%,478,5430,2013,8.1,1656,412,671,256
+ant_bee,bee,n02206856,bee,1672,543,503,30%,644,39%,644,644,39%,455,6746,1580,10.5,1672,503,644,353
+cucumber_zucchini,cucumber,n07718472,"cucumber, cuke",1268,431,375,30%,624,49%,618,617,49%,381,5701,2092,9.2,1268,375,617,221
+cucumber_zucchini,zucchini,n07716358,"zucchini, courgette",1093,389,323,30%,495,45%,493,486,44%,296,2848,1184,5.9,1093,323,486,181
+hotpot_vase,hotpot,n07590611,"hot pot, hotpot",1149,524,517,45%,308,27%,307,270,23%,213,1780,805,6.6,1149,517,270,239
+hotpot_vase,vase,n04522168,vase,1300,548,523,40%,281,22%,272,203,16%,169,1825,1085,9.0,1300,523,203,94
