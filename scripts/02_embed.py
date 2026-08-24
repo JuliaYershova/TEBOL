@@ -43,7 +43,7 @@ import random
 import subprocess
 import sys
 import time
-from collections import Counter
+from collections import Counter, defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 from urllib.parse import urlparse
@@ -128,21 +128,38 @@ def read_pair(path: Path):
     return records, counts
 
 
-def read_tags() -> Counter:
-    """Distinct human tags from the ImageNet-Captions manifest, with counts."""
+def read_tags(pair: str | None = None):
+    """(counts, {pair: records}) -- distinct tags, and the image -> tags join.
+
+    A tag is embedded whole rather than word by word: "fire engine" is one
+    thing a person chose to write, and splitting it would invent features the
+    annotator never used. Only images that actually carry tags get a record --
+    roughly a third of the corpus, and unevenly spread across classes.
+    """
     if not TAGS_DIR.is_dir():
         sys.exit(f"no tag manifest at {TAGS_DIR} -- run build_caption_tags.py")
     counts: Counter = Counter()
+    records: dict[str, list[dict]] = defaultdict(list)
     for f in sorted(TAGS_DIR.glob("*.csv")):
         with f.open(encoding="utf-8") as fh:
             for row in csv.DictReader(fh):
-                for t in (row["tags"].split("|") if row["tags"] else []):
-                    t = t.strip().lower()
-                    if t:
-                        counts[t] += 1
+                if pair and row["pair"] != pair:
+                    continue
+                tags = [t.strip().lower()
+                        for t in (row["tags"].split("|") if row["tags"] else [])]
+                tags = [t for t in tags if t]
+                if not tags:
+                    continue
+                counts.update(tags)
+                # n_words/rep are unused here; the CSR layout is shared with
+                # the caption index so one loader reads both
+                records[row["pair"]].append({
+                    "stem": row["stem"], "class": row["class"],
+                    "n_words": 0, "rep": 0, "tokens": tags})
     if not counts:
-        sys.exit(f"no tags found in {TAGS_DIR}")
-    return counts
+        sys.exit(f"no tags found in {TAGS_DIR}"
+                 + (f" for pair {pair!r}" if pair else ""))
+    return counts, dict(records)
 
 
 def read_sidecar_counts(path: Path) -> dict[str, dict[str, int]]:
@@ -199,8 +216,12 @@ def main() -> None:
     pair_records: dict[str, list[dict]] = {}
     caption_model = None
 
+    tag_records: dict[str, list[dict]] = {}
     if args.what == "tags":
-        per_pair_counts["tags"] = read_tags()
+        per_pair_counts["tags"], tag_records = read_tags(args.pair)
+        for p, recs in sorted(tag_records.items()):
+            print(f"{p:<24} {len(recs):>7,} tagged images  "
+                  f"{sum(len(r['tokens']) for r in recs):>9,} tags")
     else:
         files = caption_files(args.pair, args.caption_model, args.variant)
         caption_model = files[0][1].stem
@@ -338,6 +359,16 @@ def main() -> None:
             flag = f"  ! {got['missing']:,} words unembedded" if got["missing"] else ""
             print(f"index/{pair}.npz  {got['captions']:>7,} captions  "
                   f"{got['slots']:>9,} word slots{flag}")
+
+    if tag_records:
+        print()
+        for pair, records in sorted(tag_records.items()):
+            path = out_dir / vio.INDEX_TAGS_DIR / f"{pair}.npz"
+            got = vio.save_index(path, records, rows_of,
+                                 {**index_meta, "pair": pair, "unit": "tag"})
+            flag = f"  ! {got['missing']:,} tags unembedded" if got["missing"] else ""
+            print(f"index_tags/{pair}.npz  {got['captions']:>7,} tagged images  "
+                  f"{got['slots']:>8,} tag slots{flag}")
 
     # ---- provenance ---------------------------------------------------------
     meta = vio.load_meta(out_dir)

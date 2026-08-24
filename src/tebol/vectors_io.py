@@ -52,6 +52,10 @@ TAGS_NPZ = "tags.npz"
 TAGS_CSV = "tags.csv"
 META_JSON = "meta.json"
 INDEX_DIR = "index"
+#: image -> ImageNet-Captions tag rows. Same CSR layout as INDEX_DIR, but
+#: n_words and rep are unused (written as 0): a tag set belongs to an image,
+#: not to a caption generated at some length.
+INDEX_TAGS_DIR = "index_tags"
 
 MISSING = -1  # a word whose embedding call failed
 
