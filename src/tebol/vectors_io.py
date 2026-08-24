@@ -81,10 +81,16 @@ def atomic_write(path: Path, write) -> None:
 
 
 def save_matrix(path: Path, keys: Sequence[str], vectors: np.ndarray) -> None:
-    """Store the [n, dim] matrix and the key list whose order it follows."""
+    """Store the [n, dim] matrix and the key list whose order it follows.
+
+    Compressed: 10,723 x 2560 float32 is 110 MB stored plainly and 61 MB
+    deflated, which is the difference between a file GitHub refuses at its
+    100 MB limit and one it accepts. np.load reads either form, so files
+    written before this change still open.
+    """
     if len(keys) != len(vectors):
         raise ValueError(f"{len(keys)} keys but {len(vectors)} vectors")
-    atomic_write(path, lambda fh: np.savez(
+    atomic_write(path, lambda fh: np.savez_compressed(
         fh, keys=np.asarray(keys, dtype=object), vectors=vectors))
 
 
@@ -132,7 +138,7 @@ def save_index(path: Path, records: Sequence[dict], vocab_rows: dict[str, int],
         "offsets": offsets,
         "meta": np.asarray(json.dumps(meta or {}), dtype=object),
     }
-    atomic_write(path, lambda fh: np.savez(fh, **payload))
+    atomic_write(path, lambda fh: np.savez_compressed(fh, **payload))
     return {"captions": len(records), "slots": int(rows.size),
             "missing": int((rows == MISSING).sum())}
 
@@ -320,7 +326,7 @@ def save_image_vectors(path: Path, stem: str, cls: str, pair: str,
         "rows": np.asarray(rows, dtype=np.int32),
         "offsets": offsets,
     }
-    atomic_write(path, lambda fh: np.savez(fh, **payload))
+    atomic_write(path, lambda fh: np.savez_compressed(fh, **payload))
 
 
 def load_image_vectors(path: str | Path) -> ImageVectors:
