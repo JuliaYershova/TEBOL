@@ -1,0 +1,106 @@
+class,wnid,term,tier,source,note
+hotpot,n07590611,hotpot,1,class-name,
+hotpot,n07590611,hotpots,1,morphology,plural
+hotpot,n07590611,hotpot's,1,morphology,possessive
+hotpot,n07590611,hot-pot,1,morphology,hyphenated
+hotpot,n07590611,hot-pots,1,morphology,hyphenated plural
+hotpot,n07590611,hot pot,1,class-name,phrase
+hotpot,n07590611,hot pots,1,morphology,phrase plural
+hotpot,n07590611,steamboat,2,synonym,
+hotpot,n07590611,steamboats,2,morphology,plural
+hotpot,n07590611,steamboat's,2,morphology,possessive
+hotpot,n07590611,chinese fondue,2,synonym,phrase
+hotpot,n07590611,chinese fondues,2,morphology,phrase plural
+hotpot,n07590611,pot,3,head-noun,standalone head of the two-word class name
+vase,n04522168,vase,1,class-name,
+vase,n04522168,vases,1,morphology,plural
+vase,n04522168,vase's,1,morphology,possessive
+vase,n04522168,flower vase,2,synonym,phrase
+vase,n04522168,flower vases,2,morphology,phrase plural
+vase,n04522168,vessel,2,synonym,
+vase,n04522168,vessels,2,morphology,plural
+vase,n04522168,vessel's,2,morphology,possessive
+vase,n04522168,urn,2,synonym,
+vase,n04522168,urns,2,morphology,plural
+vase,n04522168,urn's,2,morphology,possessive
+ambulance,n02701002,ambulance,1,class-name,
+ambulance,n02701002,ambulances,1,morphology,plural
+ambulance,n02701002,ambulance's,1,morphology,possessive
+ambulance,n02701002,emergency vehicle,2,synonym,phrase
+ambulance,n02701002,emergency vehicles,2,morphology,phrase plural
+ambulance,n02701002,medical transport,2,synonym,phrase
+ambulance,n02701002,medical transports,2,morphology,phrase plural
+ambulance,n02701002,rescue vehicle,2,synonym,phrase
+ambulance,n02701002,rescue vehicles,2,morphology,phrase plural
+firetruck,n03345487,firetruck,1,class-name,
+firetruck,n03345487,firetrucks,1,morphology,plural
+firetruck,n03345487,firetruck's,1,morphology,possessive
+firetruck,n03345487,fire-truck,1,morphology,hyphenated
+firetruck,n03345487,fire-trucks,1,morphology,hyphenated plural
+firetruck,n03345487,fire truck,1,class-name,phrase
+firetruck,n03345487,fire trucks,1,morphology,phrase plural
+firetruck,n03345487,fire apparatus,2,synonym,phrase
+firetruck,n03345487,fire apparatuses,2,morphology,phrase plural
+firetruck,n03345487,fire vehicle,2,synonym,phrase
+firetruck,n03345487,fire vehicles,2,morphology,phrase plural
+firetruck,n03345487,truck,3,head-noun,standalone head of the two-word class name
+firetruck,n03345487,trucks,3,head-noun,standalone head plural
+firetruck,n03345487,truck's,3,head-noun,standalone head possessive
+cucumber,n07718472,cucumber,1,class-name,
+cucumber,n07718472,cucumbers,1,morphology,plural
+cucumber,n07718472,cucumber's,1,morphology,possessive
+cucumber,n07718472,cuke,2,synonym,
+cucumber,n07718472,cukes,2,morphology,plural
+zucchini,n07716358,zucchini,1,class-name,
+zucchini,n07716358,zucchinis,1,morphology,plural
+zucchini,n07716358,zucchini's,1,morphology,possessive
+zucchini,n07716358,courgette,2,synonym,
+zucchini,n07716358,courgettes,2,morphology,plural
+zucchini,n07716358,baby marrow,2,synonym,phrase
+zucchini,n07716358,baby marrows,2,morphology,phrase plural
+bee,n02206856,bee,1,class-name,
+bee,n02206856,bees,1,morphology,plural
+bee,n02206856,bee's,1,morphology,possessive
+bee,n02206856,honeybee,2,synonym,
+bee,n02206856,honeybees,2,morphology,plural
+bee,n02206856,honeybee's,2,morphology,possessive
+bee,n02206856,honey-bee,2,morphology,hyphenated
+bee,n02206856,honey-bees,2,morphology,hyphenated plural
+bee,n02206856,honey bee,2,synonym,phrase
+bee,n02206856,honey bees,2,morphology,phrase plural
+bee,n02206856,bumblebee,2,synonym,
+bee,n02206856,bumblebees,2,morphology,plural
+bee,n02206856,bumblebee's,2,morphology,possessive
+bee,n02206856,bumble-bee,2,morphology,hyphenated
+bee,n02206856,bumble-bees,2,morphology,hyphenated plural
+bee,n02206856,bumble bee,2,synonym,phrase
+bee,n02206856,bumble bees,2,morphology,phrase plural
+bee,n02206856,pollinator,2,synonym,
+bee,n02206856,pollinators,2,morphology,plural
+bee,n02206856,pollinator's,2,morphology,possessive
+ant,n02219486,ant,1,class-name,
+ant,n02219486,ants,1,morphology,plural
+ant,n02219486,ant's,1,morphology,possessive
+ant,n02219486,formicid,2,synonym,
+ant,n02219486,formicids,2,morphology,plural
+ant,n02219486,social insect,2,synonym,phrase
+ant,n02219486,social insects,2,morphology,phrase plural
+acousticguitar,n02676566,acoustic guitar,1,class-name,phrase
+acousticguitar,n02676566,acoustic guitars,1,morphology,phrase plural
+acousticguitar,n02676566,acoustic-guitar,1,morphology,hyphenated
+acousticguitar,n02676566,acoustic-guitars,1,morphology,hyphenated plural
+acousticguitar,n02676566,unplugged guitar,2,synonym,phrase
+acousticguitar,n02676566,unplugged guitars,2,morphology,phrase plural
+acousticguitar,n02676566,steel-string guitar,2,synonym,phrase
+acousticguitar,n02676566,steel-string guitars,2,morphology,phrase plural
+acousticguitar,n02676566,classical guitar,2,synonym,phrase
+acousticguitar,n02676566,classical guitars,2,morphology,phrase plural
+acousticguitar,n02676566,guitar,3,head-noun,standalone head of the two-word class name
+acousticguitar,n02676566,guitars,3,head-noun,standalone head plural
+acousticguitar,n02676566,guitar's,3,head-noun,standalone head possessive
+violin,n04536866,violin,1,class-name,
+violin,n04536866,violins,1,morphology,plural
+violin,n04536866,violin's,1,morphology,possessive
+violin,n04536866,fiddle,2,synonym,
+violin,n04536866,fiddles,2,morphology,plural
+violin,n04536866,fiddle's,2,morphology,possessive
