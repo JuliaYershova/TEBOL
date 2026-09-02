@@ -106,7 +106,12 @@ def main() -> None:
     args = p.parse_args()
 
     single, phrase, term_rows = load_terms(args.max_tier)
-    files = sorted(CAPTIONS.glob("*/*.jsonl"))
+    # never re-ablate our own output: a previous --emit-ablated run leaves
+    # <model>--noclass.jsonl beside the original, and feeding that back in would
+    # write <model>--noclass--noclass.jsonl and halve the reported rate by
+    # counting already-stripped captions as captions that never named the class
+    files = sorted(p for p in CAPTIONS.glob("*/*.jsonl")
+                   if not p.stem.endswith(NOCLASS))
     if not files:
         sys.exit(f"no caption files under {CAPTIONS}")
 

@@ -1,0 +1,11 @@
+pair,arm,setup,source,unanimous_images,n_captions,n_images
+acousticguitar_violin,caption,w07,prediction,0.9820734986555124,16735,3347
+acousticguitar_violin,caption_noclass,w07,prediction,0.7367792052584404,16735,3347
+ambulance_firetruck,caption,w07,prediction,0.9780181437543615,14330,2866
+ambulance_firetruck,caption_noclass,w07,prediction,0.8269364968597348,14330,2866
+ant_bee,caption,w07,prediction,0.9717548076923077,16640,3328
+ant_bee,caption_noclass,w07,prediction,0.9032451923076923,16640,3328
+cucumber_zucchini,caption,w07,prediction,0.9364675984752223,11805,2361
+cucumber_zucchini,caption_noclass,w07,prediction,0.7318932655654383,11805,2361
+hotpot_vase,caption,w07,prediction,0.9946917109024092,12245,2449
+hotpot_vase,caption_noclass,w07,prediction,0.986116782360147,12245,2449

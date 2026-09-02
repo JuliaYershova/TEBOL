@@ -75,17 +75,17 @@ count; a cucumber caption that says `zucchini` is not counted here.
 
 | pair | class | captions | naming the class | % | tokens removed | % of tokens |
 |---|---|---|---|---|---|---|
-| acousticguitar_violin | acousticguitar | 40,340 | 39,097 | 96.9% | 68,115 | 25.3% |
-| acousticguitar_violin | violin | 26,600 | 22,422 | 84.3% | 22,480 | 12.8% |
-| ambulance_firetruck | ambulance | 30,200 | 27,246 | 90.2% | 28,342 | 13.4% |
-| ambulance_firetruck | firetruck | 27,120 | 25,574 | 94.3% | 48,591 | 25.6% |
-| ant_bee | ant | 33,120 | 30,162 | 91.1% | 30,320 | 14.1% |
-| ant_bee | bee | 33,440 | 31,624 | 94.6% | 31,670 | 15.0% |
-| cucumber_zucchini | cucumber | 25,360 | 17,427 | 68.7% | 17,486 | 10.4% |
-| cucumber_zucchini | zucchini | 21,860 | 19,654 | 89.9% | 19,721 | 13.7% |
-| hotpot_vase | hotpot | 22,980 | 11,067 | 48.2% | 17,806 | 10.8% |
-| hotpot_vase | vase | 26,000 | 19,755 | 76.0% | 19,829 | 10.9% |
-| **TOTAL** |  | **287,020** | **244,028** | **85.0%** | **304,360** | **15.8%** |
+| acousticguitar_violin | acousticguitar | 80,680 | 79,127 | 98.1% | 142,111 | 11.1% |
+| acousticguitar_violin | violin | 53,200 | 46,892 | 88.1% | 47,560 | 5.5% |
+| ambulance_firetruck | ambulance | 60,400 | 54,655 | 90.5% | 61,881 | 6.2% |
+| ambulance_firetruck | firetruck | 54,239 | 50,322 | 92.8% | 94,084 | 10.2% |
+| ant_bee | ant | 66,240 | 60,376 | 91.1% | 63,972 | 6.1% |
+| ant_bee | bee | 66,879 | 63,143 | 94.4% | 67,205 | 6.5% |
+| cucumber_zucchini | cucumber | 50,720 | 38,690 | 76.3% | 40,036 | 5.2% |
+| cucumber_zucchini | zucchini | 43,719 | 40,324 | 92.2% | 41,607 | 6.2% |
+| hotpot_vase | hotpot | 45,960 | 26,462 | 57.6% | 43,451 | 5.7% |
+| hotpot_vase | vase | 51,999 | 40,278 | 77.5% | 41,268 | 5.0% |
+| **TOTAL** |  | **574,036** | **500,269** | **87.1%** | **643,175** | **7.0%** |
 
 ## By caption length
 
@@ -95,6 +95,10 @@ count; a cucumber caption that says `zucchini` is not counted here.
 | 5 | 71,755 | 61,601 | 85.8% | 5.70 | 4.63 | 0 |
 | 7 | 71,755 | 62,361 | 86.9% | 7.22 | 6.13 | 0 |
 | 10 | 71,755 | 63,350 | 88.3% | 10.31 | 9.19 | 0 |
+| 15 | 71,752 | 63,691 | 88.8% | 16.76 | 15.64 | 0 |
+| 20 | 71,755 | 63,945 | 89.1% | 22.73 | 21.58 | 0 |
+| 25 | 71,755 | 64,044 | 89.3% | 27.31 | 26.13 | 0 |
+| 30 | 71,754 | 64,561 | 90.0% | 34.40 | 33.12 | 0 |
 
 ## Limitations
 

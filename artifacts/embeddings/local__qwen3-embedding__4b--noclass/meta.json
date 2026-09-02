@@ -10,10 +10,10 @@
   "split_hyphens": false,
   "caption_variant": "noclass",
   "caption_model": "local__qwen3-vl__32b-instruct--noclass",
-  "updated": "2026-08-24T09:32:19+00:00",
-  "git_sha": "3fecebd",
+  "updated": "2026-09-02T12:23:34+00:00",
+  "git_sha": "c679c3c",
   "created": "2026-08-24T09:32:19+00:00",
-  "n_words": 10563,
+  "n_words": 27657,
   "pairs": [
     "acousticguitar_violin",
     "ambulance_firetruck",
@@ -21,5 +21,5 @@
     "cucumber_zucchini",
     "hotpot_vase"
   ],
-  "prompt_tokens": 34405
+  "prompt_tokens": 101531
 }
