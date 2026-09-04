@@ -155,7 +155,8 @@ def main() -> None:
                 "",
             ]
 
-    out = Path(args.out) if args.out else OUT_DIR / f"smer_examples_{args.arm}.md"
+    out = (Path(args.out) if args.out else ROOT / "results" / "reports"
+           / f"06_smer_examples_{args.arm}.md")
     out.write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {out}")
     print("\n".join(lines))

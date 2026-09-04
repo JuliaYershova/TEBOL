@@ -49,7 +49,7 @@ from tebol.captions_io import load_rows  # noqa: E402
 CAPTIONS = ROOT / "artifacts" / "captions"
 TERMS = ROOT / "data" / "manifest" / "class_terms.csv"
 OUT_CSV = ROOT / "results" / "metrics" / "class_leakage.csv"
-OUT_MD = ROOT / "results" / "metrics" / "class_leakage.md"
+OUT_MD = ROOT / "results" / "reports" / "03_class_leakage.md"
 #: the ablated captions live beside the originals, distinguished by this suffix.
 #: Same folder so the pair is obvious; distinct stem so stage 2 can tell them
 #: apart with --variant and never mixes the two into one vocabulary.

@@ -63,7 +63,7 @@ STYLE = {
         ("Captions, synonyms removed", "#D55E00", "s", "s"),
 }
 
-WORDS = {"w03": "3words", "w05": "5words", "w07": "7words", "w10": "10words"}
+WORDS = {f"w{n:02d}": f"{n}words" for n in (3, 5, 7, 10, 15, 20, 25, 30)}
 
 #: folder -> (arms, needs a caption length, note appended to the labels)
 SETS = {
@@ -128,7 +128,13 @@ def figure(df, pair, arms, setup, note, path, plt) -> bool:
     pad = (hi - lo) * 0.08
     ax.set_xlabel(X_LABEL, fontsize=10)
     ax.set_ylabel(Y_LABEL, fontsize=10)
-    ax.set_xticks(range(K_MIN, k_max + 1))
+    # Every integer is a tick up to ~12 removals; beyond that they collide
+    # (w30 runs to k=29 and the labels ran together into "101112131415").
+    stride = 1 if k_max <= 12 else (2 if k_max <= 20 else 3)
+    ticks = list(range(K_MIN, k_max + 1, stride))
+    if ticks[-1] != k_max:
+        ticks.append(k_max)
+    ax.set_xticks(ticks)
     ax.set_ylim(max(0.0, lo - pad), hi + pad)
     ax.grid(alpha=0.3, linewidth=0.5)
     ax.tick_params(labelsize=9)

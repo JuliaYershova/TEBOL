@@ -29,7 +29,7 @@ ANNOT = ROOT / "data" / "annotations"
 CAPTIONS = ANNOT / "imagenet_captions.json"
 WORDS_CACHE = ROOT / "data" / "manifest" / "synset_words.csv"
 OUT_CSV = ROOT / "results" / "metrics" / "coverage.csv"
-OUT_MD = ROOT / "results" / "metrics" / "coverage.md"
+OUT_MD = ROOT / "results" / "reports" / "01_coverage.md"
 
 WORDS_URL = "https://image-net.org/data/words.txt"
 IMG_EXT = {".jpeg", ".jpg", ".png"}

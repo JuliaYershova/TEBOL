@@ -2,10 +2,10 @@ pair,class,captions,with_class,pct_with_class,tokens,class_tokens,pct_tokens_rem
 acousticguitar_violin,acousticguitar,80680,79127,98.1,1281567,142111,11.1,0
 acousticguitar_violin,violin,53200,46892,88.1,869046,47560,5.5,0
 ambulance_firetruck,ambulance,60400,54655,90.5,1003149,61881,6.2,14
-ambulance_firetruck,firetruck,54239,50322,92.8,919600,94084,10.2,0
+ambulance_firetruck,firetruck,54240,50323,92.8,919638,94086,10.2,0
 ant_bee,ant,66240,60376,91.1,1048018,63972,6.1,0
-ant_bee,bee,66879,63143,94.4,1032088,67205,6.5,0
+ant_bee,bee,66880,63143,94.4,1032104,67205,6.5,0
 cucumber_zucchini,cucumber,50720,38690,76.3,776212,40036,5.2,0
-cucumber_zucchini,zucchini,43719,40324,92.2,665811,41607,6.2,0
+cucumber_zucchini,zucchini,43720,40325,92.2,665830,41608,6.2,0
 hotpot_vase,hotpot,45960,26462,57.6,765035,43451,5.7,0
-hotpot_vase,vase,51999,40278,77.5,833152,41268,5.0,0
+hotpot_vase,vase,52000,40279,77.5,833169,41269,5.0,0
