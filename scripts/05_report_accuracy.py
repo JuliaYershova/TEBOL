@@ -29,8 +29,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 METRICS_DIR = ROOT / "results" / "metrics" / "stage3"
 
-SETUPS = ["w03", "w05", "w07", "w10"]
-PRETTY = {"w03": "3", "w05": "5", "w07": "7", "w10": "10"}
+SETUPS = [f"w{n:02d}" for n in (3, 5, 7, 10, 15, 20, 25, 30)]
+PRETTY = {f"w{n:02d}": str(n) for n in (3, 5, 7, 10, 15, 20, 25, 30)}
 
 
 def cell(row) -> str:
@@ -140,7 +140,8 @@ def main() -> None:
         "",
     ]
 
-    out = Path(args.out) if args.out else METRICS_DIR / f"{args.metric}.md"
+    out = (Path(args.out) if args.out else
+           ROOT / "results" / "reports" / f"04_{args.metric}.md")
     out.write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {out}")
     print("\n".join(lines))

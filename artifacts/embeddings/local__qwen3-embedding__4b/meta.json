@@ -9,8 +9,8 @@
   "instruction_prefix": null,
   "split_hyphens": false,
   "caption_model": "local__qwen3-vl__32b-instruct",
-  "updated": "2026-09-02T12:16:17+00:00",
-  "git_sha": "c679c3c",
+  "updated": "2026-09-03T11:28:04+00:00",
+  "git_sha": "867b402",
   "created": "2026-08-24T08:08:50+00:00",
   "n_words": 28027,
   "pairs": [

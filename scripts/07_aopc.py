@@ -424,7 +424,7 @@ def write_report(df: pd.DataFrame, args) -> None:
         "in two captions, and these two curves are the measurement of that.",
         "",
     ]
-    out = OUT_DIR / "aopc.md"
+    out = ROOT / "results" / "reports" / "05_aopc.md"
     out.write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {out}")
 
