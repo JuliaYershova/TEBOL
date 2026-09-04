@@ -38,6 +38,16 @@ model variation with caption-generation variation, which is the right thing for
 interval over images -- the reps are nested within images -- so it is reported
 as a spread, not as a significance test.
 
+This writes metrics only. Figures are scripts/10_figure_sets.py, which owns
+results/figures/aopc/ and clears it on each run -- two scripts drawing into one
+directory with different colour conventions is how a figure set drifts out of
+alignment without anyone noticing.
+
+Metrics only. Figures are scripts/10_figure_sets.py, which owns
+results/figures/aopc/ and clears it each run; two scripts drawing into one
+directory with different colour conventions is how a figure set drifts out of
+alignment unnoticed.
+
     python scripts/07_aopc.py
     python scripts/07_aopc.py --pair hotpot_vase --max-k 6
     python scripts/07_aopc.py --ranking global
@@ -331,9 +341,6 @@ def main() -> None:
                          "as the Diplom notebook did (0 = whole vocabulary). "
                          "A caption containing none of them contributes a drop "
                          "of zero, which is why those curves sit far lower.")
-    ap.add_argument("--plot-setup", default="w07",
-                    help="caption length shown in the arm-comparison figures")
-    ap.add_argument("--no-plots", action="store_true")
     args = ap.parse_args()
 
     pairs = args.pair or list(PAIRS)
@@ -362,8 +369,6 @@ def main() -> None:
     df.to_csv(OUT_DIR / "aopc.csv", index=False)
     print(f"\nwrote {OUT_DIR / 'aopc.csv'} ({len(df)} rows)")
     write_report(df, args)
-    if not args.no_plots:
-        plot(df, setup=args.plot_setup)
 
 
 def write_report(df: pd.DataFrame, args) -> None:
@@ -429,132 +434,6 @@ def write_report(df: pd.DataFrame, args) -> None:
     print(f"wrote {out}")
 
 
-# --------------------------------------------------------------------------
-# figures
-# --------------------------------------------------------------------------
-
-FIG_DIR = ROOT / "results" / "figures" / "aopc"
-
-#: Colour-blind safe (Okabe-Ito), and each arm keeps its colour across every
-#: figure so a reader who learns the legend once can read all of them.
-ARM_STYLE = {
-    "caption": ("#0072B2", "-", "o"),
-    "caption_noclass": ("#D55E00", "--", "s"),
-    "tags": ("#009E73", "-.", "^"),
-    "caption_tagsub": ("#56B4E9", "-", "v"),
-    "caption_noclass_tagsub": ("#E69F00", "--", "D"),
-}
-SETUP_COLOR = {"w03": "#0072B2", "w05": "#009E73",
-               "w07": "#D55E00", "w10": "#CC79A7", "tags": "#666666"}
-
-
-def _axis(ax, title: str) -> None:
-    ax.set_title(title, fontsize=10)
-    ax.set_xlabel("words removed (k)", fontsize=9)
-    ax.grid(alpha=0.3, linewidth=0.5)
-    ax.tick_params(labelsize=8)
-
-
-def _ylim(axes, values) -> None:
-    """One limit for the whole figure: zero floor, headroom above the peak.
-
-    Set once from the data rather than per axis -- with sharey=True the last
-    per-axis set_ylim wins and silently clips whichever panel peaks highest.
-    """
-    top = float(np.nanmax(values)) if len(values) else 1.0
-    for ax in np.atleast_1d(axes):
-        ax.set_ylim(0, top * 1.08)
-
-
-def _band(ax, g, color, ls, marker, label):
-    g = g.sort_values("k")
-    ax.plot(g["k"], g["mean"], color=color, linestyle=ls, marker=marker,
-            markersize=4, linewidth=1.6, label=label)
-    ax.fill_between(g["k"], g["ci_lo"], g["ci_hi"], color=color, alpha=0.18,
-                    linewidth=0)
-
-
-def plot(df: pd.DataFrame, setup: str = "w07") -> None:
-    """Two figures for the paper, plus one per-pair length panel.
-
-    The interval is drawn as a band rather than error bars: at 25 groups the
-    bars are narrower than the marker on most points, and a band reads as what
-    it is -- a spread, not a significance claim.
-    """
-    import matplotlib
-    matplotlib.use("Agg")
-    import matplotlib.pyplot as plt
-
-    FIG_DIR.mkdir(parents=True, exist_ok=True)
-    local = df[df.ranking == "local"]
-    pairs = sorted(local["pair"].unique())
-
-    # 1. arms compared, one panel per pair -- the headline figure
-    fig, axes = plt.subplots(1, len(pairs), figsize=(3.1 * len(pairs), 3.0),
-                             sharey=True)
-    for ax, pair in zip(np.atleast_1d(axes), pairs):
-        gp = local[local.pair == pair]
-        for arm, (color, ls, marker) in ARM_STYLE.items():
-            want = "tags" if arm == "tags" else setup
-            g = gp[(gp.arm == arm) & (gp.setup == want)]
-            if not g.empty:
-                _band(ax, g, color, ls, marker, arm)
-        _axis(ax, pair.replace("_", " / "))
-    shown = local[(local.setup == setup) | (local.arm == "tags")]
-    _ylim(axes, shown["ci_hi"].to_numpy())
-    np.atleast_1d(axes)[0].set_ylabel("mean drop in P(predicted)", fontsize=9)
-    handles, labels = np.atleast_1d(axes)[0].get_legend_handles_labels()
-    fig.legend(handles, labels, loc="lower center", ncol=len(labels),
-               fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.02))
-    fig.suptitle(f"AOPC for SMER, {setup} captions (local ranking)", fontsize=11)
-    fig.tight_layout(rect=(0, 0.06, 1, 0.96))
-    for ext in ("png", "pdf"):
-        fig.savefig(FIG_DIR / f"aopc_arms_{setup}.{ext}", dpi=200,
-                    bbox_inches="tight")
-    plt.close(fig)
-
-    # 2. caption length, one panel per pair, within each caption arm
-    for arm in ("caption", "caption_noclass"):
-        fig, axes = plt.subplots(1, len(pairs), figsize=(3.1 * len(pairs), 3.0),
-                                 sharey=True)
-        for ax, pair in zip(np.atleast_1d(axes), pairs):
-            gp = local[(local.pair == pair) & (local.arm == arm)]
-            for s in sorted(gp["setup"].unique()):
-                _band(ax, gp[gp.setup == s], SETUP_COLOR.get(s, "#333333"),
-                      "-", "o", s)
-            _axis(ax, pair.replace("_", " / "))
-        _ylim(axes, local[local.arm == arm]["ci_hi"].to_numpy())
-        np.atleast_1d(axes)[0].set_ylabel("mean drop in P(predicted)", fontsize=9)
-        handles, labels = np.atleast_1d(axes)[0].get_legend_handles_labels()
-        fig.legend(handles, labels, loc="lower center", ncol=len(labels),
-                   fontsize=8, frameon=False, bbox_to_anchor=(0.5, -0.02))
-        fig.suptitle(f"AOPC by caption length -- {arm}", fontsize=11)
-        fig.tight_layout(rect=(0, 0.06, 1, 0.96))
-        for ext in ("png", "pdf"):
-            fig.savefig(FIG_DIR / f"aopc_lengths_{arm}.{ext}", dpi=200,
-                        bbox_inches="tight")
-        plt.close(fig)
-
-    # 3. single-pair figures, for slotting into the text one at a time
-    for pair in pairs:
-        fig, ax = plt.subplots(figsize=(4.2, 3.2))
-        gp = local[local.pair == pair]
-        for arm, (color, ls, marker) in ARM_STYLE.items():
-            want = "tags" if arm == "tags" else setup
-            g = gp[(gp.arm == arm) & (gp.setup == want)]
-            if not g.empty:
-                _band(ax, g, color, ls, marker, arm)
-        _axis(ax, f"{pair.replace('_', ' / ')} ({setup})")
-        _ylim(ax, gp[(gp.setup == setup) | (gp.arm == "tags")]["ci_hi"].to_numpy())
-        ax.set_ylabel("mean drop in P(predicted)", fontsize=9)
-        ax.legend(fontsize=7, frameon=False)
-        fig.tight_layout()
-        for ext in ("png", "pdf"):
-            fig.savefig(FIG_DIR / f"aopc_{pair}_{setup}.{ext}", dpi=200,
-                        bbox_inches="tight")
-        plt.close(fig)
-
-    print(f"wrote figures to {FIG_DIR}")
 
 
 if __name__ == "__main__":

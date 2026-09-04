@@ -53,14 +53,28 @@ K_MIN = 1
 SMER_RANKING = "smer_subsample"
 LIME_RANKING = "lime_bow"          # LIME's own defaults; see 09_lime.py
 
-#: arm -> (short label, colour, SMER marker, LIME marker)
+#: arm -> (legend label, colour, marker). Colour identifies the arm; SMER is
+#: solid with a filled marker, LIME dashed with a hollow one, so method never
+#: competes with representation for the same visual channel.
+#:
+#: `caption` and `caption_tagsub` no longer share a colour. They did while no
+#: figure carried both, but 06 now shows the full corpus beside the tag-covered
+#: subset, and two lines meaning different image sets cannot look identical.
+#: Shade-within-a-family was tried first -- dark blue for the corpus, light
+#: blue for the subset -- and the two blues were not separable on the page.
+#: Each arm now takes its own hue from the Okabe-Ito set instead. Markers are
+#: chosen for silhouette rather than family: circle, square, triangle, diamond,
+#: star. Up- and down-triangles were tried first and read as the same shape at
+#: print size; a cross read as a plotting artefact rather than a marker. The
+#: diamond is a rotated square, but corner-up against flat-top separates them
+#: at this size.
 STYLE = {
-    "caption": ("Captions", "#0072B2", "o", "o"),
-    "caption_noclass": ("Captions, synonyms removed", "#D55E00", "s", "s"),
-    "tags": ("ImageNet tags", "#009E73", "^", "^"),
-    "caption_tagsub": ("Captions", "#0072B2", "o", "o"),
+    "caption": ("Captions", "#0072B2", "o"),
+    "caption_noclass": ("Captions, synonyms removed", "#D55E00", "s"),
+    "tags": ("ImageNet tags", "#009E73", "^"),
+    "caption_tagsub": ("Captions, tag subset", "#CC79A7", "D"),
     "caption_noclass_tagsub":
-        ("Captions, synonyms removed", "#D55E00", "s", "s"),
+        ("Captions, synonyms removed, tag subset", "#E69F00", "*"),
 }
 
 WORDS = {f"w{n:02d}": f"{n}words" for n in (3, 5, 7, 10, 15, 20, 25, 30)}
@@ -71,15 +85,14 @@ SETS = {
     "02_without_synonyms": (["caption_noclass"], True, ""),
     "03_tags": (["tags"], False, ""),
     "04_full_vs_without_synonyms": (["caption", "caption_noclass"], True, ""),
-    # The note goes on the caption lines only: every line in these two sets is
-    # already restricted to tag-covered images, so saying so four times is
-    # noise, but saying it nowhere would let a reader assume full-corpus
-    # captions are being compared against tags.
-    "05_full_captions_vs_tags":
-        (["caption_tagsub", "tags"], True, ", tag subset"),
+    "05_full_captions_vs_tags": (["caption_tagsub", "tags"], True, ""),
+    # Deliberately mixes scopes: the first two lines are the full corpus, the
+    # last two the third of images ImageNet-Captions covers. That is what makes
+    # it all-to-all, and it is why `caption` and `caption_tagsub` are both here
+    # and separately coloured -- the pair of them prices the restriction, so a
+    # reader can tell a representation effect from a sample effect.
     "06_all_to_all":
-        (["caption_tagsub", "caption_noclass_tagsub", "tags"], True,
-         ", tag subset"),
+        (["caption", "caption_noclass", "tags", "caption_tagsub"], True, ""),
 }
 
 
@@ -112,14 +125,13 @@ def figure(df, pair, arms, setup, note, path, plt) -> bool:
     single = len(arms) == 1
 
     for arm, s, l in lines:
-        label, color, m_s, m_l = STYLE[arm]
-        label = label + (note if arm != "tags" else "")
-        for g, meth, ls, mk, fill in (
-                (s, "SMER", "-", m_s, color), (l, "LIME", (0, (4, 2)), m_l, "none")):
+        label, color, mk = STYLE[arm]
+        for g, meth, ls, fill in (
+                (s, "SMER", "-", color), (l, "LIME", (0, (4, 2)), "none")):
             name = meth if single else f"{label} ({meth})"
             ax.plot(g["k"], g["mean"], color=color, linestyle=ls, marker=mk,
-                    markersize=4.2, markerfacecolor=fill, markeredgecolor=color,
-                    linewidth=1.3, label=name)
+                    markersize=4.4, markerfacecolor=fill, markeredgecolor=color,
+                    markeredgewidth=1.0, linewidth=1.1, label=name)
             ax.fill_between(g["k"], g["ci_lo"], g["ci_hi"], color=color,
                             alpha=0.13, linewidth=0)
             lo = min(lo, float(g["ci_lo"].min()))
