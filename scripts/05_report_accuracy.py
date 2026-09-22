@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Stage 3c -- the accuracy tables, grouped so only comparable things share a row.
 
-Reads results/metrics/stage3/{summary,comparisons}.csv and writes accuracy.md.
+Reads results/metrics/{summary,comparisons}.csv and writes accuracy.md.
 
 Two tables, because there are two scopes and mixing them is the mistake this
 whole design exists to avoid. The full-scope arms run on every captioned image;
@@ -27,7 +27,7 @@ from pathlib import Path
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
-METRICS_DIR = ROOT / "results" / "metrics" / "stage3"
+METRICS_DIR = ROOT / "results" / "metrics"
 
 SETUPS = [f"w{n:02d}" for n in (3, 5, 7, 10, 15, 20, 25, 30)]
 PRETTY = {f"w{n:02d}": str(n) for n in (3, 5, 7, 10, 15, 20, 25, 30)}

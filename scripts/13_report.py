@@ -9,7 +9,7 @@ The earlier version of this script printed every number it could find -- ten
 word-list tables, a 25-row AOPC table -- and was unreadable as a result. What a
 reader needs is the claim first and the evidence under it, so each section here
 leads with the finding and carries only the columns that bear on it. The full
-numbers stay in results/metrics/stage3/*.csv for anyone who wants them.
+numbers stay in results/metrics/*.csv for anyone who wants them.
 
     python scripts/13_report.py
     python scripts/13_report.py --setup w15 --topn 6
@@ -29,7 +29,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from tebol import arms as arms_mod  # noqa: E402
 
-M = ROOT / "results" / "metrics" / "stage3"
+M = ROOT / "results" / "metrics"
 OUT = ROOT / "results" / "reports" / "README.md"
 
 PAIRS = ("acousticguitar_violin", "ambulance_firetruck", "ant_bee",
@@ -309,7 +309,7 @@ def main() -> None:
         "and that moves the explanation more than refitting the model does.",
         "",
         f"Detail below at **{args.setup}**; full numbers in "
-        "`results/metrics/stage3/*.csv`, figures in "
+        "`results/metrics/*.csv`, figures in "
         "`results/figures/aopc/`.",
         "",
         *section_leakage(s, args.setup),

@@ -83,7 +83,7 @@ def main() -> None:
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
 
-    summ = pd.read_csv(M / "stage3" / "summary.csv")
+    summ = pd.read_csv(M / "summary.csv")
     summ = summ[(summ.level == "caption") & (summ.metric == "accuracy")]
     pairs = sorted(Path(p).name for p in glob.glob(str(ROOT / "artifacts" / "captions" / "*")))
 
@@ -129,8 +129,8 @@ def main() -> None:
     print(f"join verified against summary.csv for {len(d)} cells")
     if args.check:
         return
-    d.to_csv(M / "stage3" / "leakage_within_length.csv", index=False)
-    print(f"wrote {M / 'stage3' / 'leakage_within_length.csv'}")
+    d.to_csv(M / "leakage_within_length.csv", index=False)
+    print(f"wrote {M / 'leakage_within_length.csv'}")
     FIG.mkdir(parents=True, exist_ok=True)
 
     # --- the split, one panel per pair ---
@@ -190,7 +190,7 @@ def main() -> None:
                label="mix (naming rate)" if i == 0 else None)
         ax.plot(i, total * 100, marker="D", markersize=6, color=C_ALL, zorder=4,
                 linestyle="none", label="total change" if i == 0 else None)
-    pd.DataFrame(dec).to_csv(M / "stage3" / "leakage_decomposition.csv", index=False)
+    pd.DataFrame(dec).to_csv(M / "leakage_decomposition.csv", index=False)
     ax.axhline(0, color="#c3c2b7", linewidth=1)
     ax.set_xticks(range(len(pairs)))
     ax.set_xticklabels([p.replace("_", " /\n") for p in pairs], fontsize=8)
@@ -204,7 +204,7 @@ def main() -> None:
         fig.savefig(FIG / f"decomposition.{ext}", dpi=300, bbox_inches="tight")
     plt.close(fig)
     print(f"\nwrote {FIG / 'decomposition.png'}")
-    print(f"wrote {M / 'stage3' / 'leakage_decomposition.csv'}")
+    print(f"wrote {M / 'leakage_decomposition.csv'}")
 
 
 if __name__ == "__main__":

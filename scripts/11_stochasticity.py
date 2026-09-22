@@ -52,7 +52,7 @@ from tebol.vectors_io import load_matrix  # noqa: E402
 
 PAIRS = ("acousticguitar_violin", "ambulance_firetruck", "ant_bee",
          "cucumber_zucchini", "hotpot_vase")
-OUT_DIR = ROOT / "results" / "metrics" / "stage3"
+OUT_DIR = ROOT / "results" / "metrics"
 TOPK = 3
 MAX_CAPTIONS = 400
 

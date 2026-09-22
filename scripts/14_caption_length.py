@@ -40,7 +40,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-M = ROOT / "results" / "metrics" / "stage3"
+M = ROOT / "results" / "metrics"
 FIG = ROOT / "results" / "figures" / "caption_length"
 
 LENGTHS = (3, 5, 7, 10, 15, 20, 25, 30)

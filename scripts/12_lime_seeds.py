@@ -52,7 +52,7 @@ stability = _stoch.stability
 
 PAIRS = ("acousticguitar_violin", "ambulance_firetruck", "ant_bee",
          "cucumber_zucchini", "hotpot_vase")
-OUT_DIR = ROOT / "results" / "metrics" / "stage3"
+OUT_DIR = ROOT / "results" / "metrics"
 
 N_CAPTIONS = 200
 NUM_SAMPLES = 5000

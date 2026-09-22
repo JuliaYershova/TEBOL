@@ -94,7 +94,7 @@ conv = [json.loads(f.read_text())["converged"]
 add("3 models", "all LR fits converged", want, sum(conv))
 
 # 6. AOPC ------------------------------------------------------------------
-a = pd.read_csv(ROOT / "results/metrics/stage3/aopc.csv")
+a = pd.read_csv(ROOT / "results/metrics/aopc.csv")
 prim = ["local", "global", "smer_subsample", "lime", "lime_bow"]
 for r in prim:
     add("6 AOPC", f"{r}: configs covered", want,
@@ -106,11 +106,11 @@ bad = sum(1 for _, g in a[a.ranking.isin(prim)].groupby(
 add("6 AOPC", "non-monotone primary curves", 0, bad)
 
 # 7. comparisons, stochasticity -------------------------------------------
-c = pd.read_csv(ROOT / "results/metrics/stage3/comparisons.csv")
+c = pd.read_csv(ROOT / "results/metrics/comparisons.csv")
 add("7 comparisons", "paired tests", ">0", f"{len(c):,}", ok=len(c) > 0)
 add("7 comparisons", "setups covered", len(LEN), c.setup.nunique())
 for f, lab in (("stochasticity.csv", "SMER"), ("stochasticity_lime.csv", "LIME")):
-    d = pd.read_csv(ROOT / "results/metrics/stage3" / f)
+    d = pd.read_csv(ROOT / "results/metrics" / f)
     add("8 stochasticity", f"{lab}: rows", ">0", len(d), ok=len(d) > 0)
     add("8 stochasticity", f"{lab}: lengths measured", ">1", d.setup.nunique(),
         ok=d.setup.nunique() > 1)
@@ -122,8 +122,8 @@ add("9 figures", "AOPC png", 205, len(list((ROOT / "results/figures/aopc").rglob
 add("9 figures", "AOPC folders", 6,
     len([d for d in (ROOT / "results/figures/aopc").iterdir() if d.is_dir()]))
 add("9 figures", "caption-length png", ">0",
-    len(list((ROOT / "results/figures/caption_length").glob("*.png"))),
-    ok=any((ROOT / "results/figures/caption_length").glob("*.png")))
+    len(list((ROOT / "results/figures/accuracy_vs_length").glob("*.png"))),
+    ok=any((ROOT / "results/figures/accuracy_vs_length").glob("*.png")))
 md = sorted((ROOT / "results/reports").glob("*.md"))
 add("10 reports", "markdown reports", ">0", len(md), ok=len(md) > 0)
 

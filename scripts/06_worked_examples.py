@@ -51,7 +51,7 @@ from tebol import arms as arms_mod  # noqa: E402
 
 PAIRS = ("acousticguitar_violin", "ambulance_firetruck", "ant_bee",
          "cucumber_zucchini", "hotpot_vase")
-OUT_DIR = ROOT / "results" / "metrics" / "stage3"
+OUT_DIR = ROOT / "results" / "metrics"
 
 
 def embedding_preview(vec: np.ndarray, head: int = 2) -> str:
