@@ -49,6 +49,15 @@ nohup.out
 !artifacts/explanations/*/*/*/*/
 artifacts/explanations/*/*/*/*/*
 !artifacts/explanations/*/*/*/*/smer_global.parquet
+
+# the bbox replies ARE committed: 19 MB of JSONL holding every prompt, raw
+# reply and box. Unlike the overlays drawn from them they cannot be
+# regenerated -- 22,655 calls at temperature 1.0 against a server that may
+# not outlive the thesis -- and every bbox metric is computed from them.
+!artifacts/bbox/
+!artifacts/bbox/*/
+artifacts/bbox/*/*
+!artifacts/bbox/*/*.jsonl
 *.pkl
 .env
 .env.*
