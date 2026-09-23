@@ -14,7 +14,8 @@ from .base import CaptionResult, build_prompt, encode_image, max_tokens_for
 
 class OpenAICompatCaptioner:
     def __init__(self, model: str, api_key: str, base_url: str | None = None,
-                 max_retries: int = 4, image_mime: str = "image/jpeg"):
+                 max_retries: int = 4, image_mime: str = "image/jpeg",
+                 timeout: float = 120.0):
         try:
             from openai import OpenAI
         except ImportError as exc:  # pragma: no cover
@@ -24,10 +25,23 @@ class OpenAICompatCaptioner:
         self.name = f"{'local' if base_url else 'openai'}:{model}"
         self.max_retries = max_retries
         self.image_mime = image_mime
-        self.client = OpenAI(api_key=api_key, base_url=base_url or None)
+        # a timeout is not optional on a multi-hour run: without one, a server
+        # that accepts the connection and then stops answering blocks forever,
+        # and the retry below never fires because a hang raises nothing.
+        self.client = OpenAI(api_key=api_key, base_url=base_url or None,
+                             timeout=timeout, max_retries=0)
 
     def caption(self, image_path: str | Path, n_words: int,
                 temperature: float, seed: int | None = None) -> CaptionResult:
+        return self.ask(image_path, build_prompt(n_words),
+                        max_tokens=max_tokens_for(n_words),
+                        temperature=temperature, seed=seed)
+
+    def ask(self, image_path: str | Path, prompt: str, max_tokens: int,
+            temperature: float, seed: int | None = None) -> CaptionResult:
+        """One image, one prompt, one reply. `caption` is this with the
+        caption prompt; the bbox stage passes its own and reuses the retry,
+        encoding and usage accounting rather than repeating them."""
         # encoding failures must not abort a multi-hour run over one bad image
         try:
             b64 = encode_image(image_path)
@@ -39,15 +53,14 @@ class OpenAICompatCaptioner:
         messages = [{
             "role": "user",
             "content": [
-                {"type": "text", "text": build_prompt(n_words)},
+                {"type": "text", "text": prompt},
                 {"type": "image_url",
                  "image_url": {"url": f"data:{self.image_mime};base64,{b64}"}},
             ],
         }]
 
         kwargs = dict(model=self.model, messages=messages,
-                      max_tokens=max_tokens_for(n_words),
-                      temperature=temperature)
+                      max_tokens=max_tokens, temperature=temperature)
         if seed is not None:
             kwargs["seed"] = seed
 
