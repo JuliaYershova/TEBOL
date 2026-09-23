@@ -46,9 +46,11 @@ in the pair rather than a sample. `--all-boxes` adds the other words' boxes
 in orange, for seeing what the model did with the rest of the prompt.
 
 Overlays go to artifacts/bbox/<pair>/overlays/ by default, not results/, and
-for a reason: one PNG per image is ~150 KB, so a pair is well over 100 MB and
-results/ is tracked in git. Pass --out to put a chosen few somewhere they can
-be committed.
+for a reason: one PNG per image is ~265 KB, so all five pairs are 1.2 GB and
+results/ is tracked in git. `--per-class N` draws a committable subset
+instead, spread evenly across the IoU range so it shows the distribution
+rather than only the extremes -- the best and worst images are its endpoints.
+Pass --out to send it somewhere tracked.
 
 `table` is the results table: per class and per pair, how stable the box is
 across repeated calls, how often a reply could not be localised at all, how
@@ -330,7 +332,22 @@ def draw(args) -> None:
             by_stem[r["stem"]] = r
     rows = [r for r in by_stem.values() if r]
     rows.sort(key=lambda r: r["stem"])
-    if not args.all and args.limit:
+
+    if args.per_class:
+        # evenly spaced over the IoU-sorted list: endpoints are the worst and
+        # best image, the rest sample the distribution between them
+        picked = []
+        by_cls = {}
+        for r in rows:
+            by_cls.setdefault(r["class"], []).append(r)
+        for cls, sub in sorted(by_cls.items()):
+            sub.sort(key=lambda r: B.best_iou(r["box"], r["truth"]))
+            k = min(args.per_class, len(sub))
+            idx = [round(i * (len(sub) - 1) / max(k - 1, 1)) for i in range(k)]
+            picked += [sub[i] for i in dict.fromkeys(idx)]
+            print(f"  {cls}: {len(dict.fromkeys(idx))} of {len(sub)}")
+        rows = picked
+    elif not args.all and args.limit:
         rows = rows[:args.limit]
 
     out_dir = Path(args.out) if args.out else OUT / args.pair / "overlays"
@@ -709,6 +726,8 @@ def main() -> None:
                    help="every image in the pair, not just --limit")
     d.add_argument("--rep", type=int, default=0,
                    help="which repetition to draw")
+    d.add_argument("--per-class", type=int, default=None,
+                   help="draw N per class, spread across the IoU range")
     d.add_argument("--out", default=None,
                    help="output directory (default artifacts/bbox/<pair>/overlays)")
 
