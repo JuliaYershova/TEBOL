@@ -36,6 +36,28 @@ nohup.out
 *.npy
 *.npz
 *.parquet
+
+# smer_global IS committed: 165 files, 16 MB, the per-word vocabulary ranking
+# that the leakage argument is read off. The rest of artifacts/explanations is
+# 434 MB of per-caption detail nobody reads directly, and it is reproducible --
+# SMER is deterministic and LIME is seeded. Must come after *.parquet above,
+# and each directory level has to be re-included before the file can be.
+!artifacts/explanations/
+!artifacts/explanations/*/
+!artifacts/explanations/*/*/
+!artifacts/explanations/*/*/*/
+!artifacts/explanations/*/*/*/*/
+artifacts/explanations/*/*/*/*/*
+!artifacts/explanations/*/*/*/*/smer_global.parquet
+
+# the bbox replies ARE committed: 19 MB of JSONL holding every prompt, raw
+# reply and box. Unlike the overlays drawn from them they cannot be
+# regenerated -- 22,655 calls at temperature 1.0 against a server that may
+# not outlive the thesis -- and every bbox metric is computed from them.
+!artifacts/bbox/
+!artifacts/bbox/*/
+artifacts/bbox/*/*
+!artifacts/bbox/*/*.jsonl
 *.pkl
 .env
 .env.*

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Stage 3b -- the arm-to-arm tests the five setups were built to support.
 
-Reads results/metrics/stage3/folds.csv and writes comparisons.csv. Nothing is
+Reads results/metrics/folds.csv and writes comparisons.csv. Nothing is
 refitted; the arms already ran on identical image folds, so every comparison
 here is paired fold by fold, which is the only reason the differences are
 testable at all.
@@ -48,7 +48,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from tebol import stats  # noqa: E402
 
-METRICS_DIR = ROOT / "results" / "metrics" / "stage3"
+METRICS_DIR = ROOT / "results" / "metrics"
 
 #: (family, arm_a, arm_b) -- a positive delta always means arm_a scored higher.
 ARM_FAMILIES = [

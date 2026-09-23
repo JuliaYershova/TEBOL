@@ -70,7 +70,7 @@ from tebol import arms as arms_mod, stats  # noqa: E402
 
 PAIRS = ("acousticguitar_violin", "ambulance_firetruck", "ant_bee",
          "cucumber_zucchini", "hotpot_vase")
-OUT_DIR = ROOT / "results" / "metrics" / "stage3"
+OUT_DIR = ROOT / "results" / "metrics"
 #: k runs to one less than the setup's nominal length: a 3-word caption can
 #: give up at most 2 words and still be a caption, so w03 stops at k=2, w05 at
 #: 4, w07 at 6, w10 at 9. Anchoring on the requested length rather than on the

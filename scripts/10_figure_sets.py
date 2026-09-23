@@ -43,7 +43,7 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-AOPC_CSV = ROOT / "results" / "metrics" / "stage3" / "aopc.csv"
+AOPC_CSV = ROOT / "results" / "metrics" / "aopc.csv"
 OUT = ROOT / "results" / "figures" / "aopc"
 
 X_LABEL = "Number of words removed"

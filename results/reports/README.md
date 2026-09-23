@@ -34,7 +34,7 @@ Five class pairs, logistic regression on mean-pooled qwen3-embedding vectors (25
 4. **SMER beats LIME by more the longer the caption**, from 0.006 at 3 words to 0.346 at 30, for a reason that is structural rather than empirical.
 5. **The captioner is the dominant source of instability.** Two repetitions of one image share under half their words at 30 words, and that moves the explanation more than refitting the model does.
 
-Detail below at **w07**; full numbers in `results/metrics/stage3/*.csv`, figures in `results/figures/aopc/`.
+Detail below at **w07**; full numbers in `results/metrics/*.csv`, figures in `results/figures/aopc/`.
 
 ## 1. Most of the accuracy is the caption naming its own class
 
@@ -109,36 +109,6 @@ Top 5 words per class, class name removed, at w07. Corpus ranking over words app
 |  | hotpot | cooking, stew, broths, stir-fry, soup | clay, green, black, greens, red |
 
 SMER returns object and scene nouns. LIME's corpus lists are contaminated by high-frequency filler — `and`, `with`, `on` reach its top ranks, while **no stopword reaches SMER's top 20 in any pair**. This is the corpus-level aggregate; per caption the two agree closely.
-
-## 6. How repeatable is the captioner?
-
-The vision model was asked five times per image at each length, temperature 1.0. Measured on the raw caption files: no classifier, no embedding, no explainer.
-
-| requested | mean actual | length sd | token overlap | content overlap | identical | names class consistently |
-|---:|---:|---:|---:|---:|---:|---:|
-| 3 | 3.7 | 0.56 | 0.621 | 0.630 | 0.328 | 0.838 |
-| 5 | 5.7 | 0.54 | 0.640 | 0.639 | 0.246 | 0.909 |
-| 7 | 7.2 | 0.71 | 0.615 | 0.607 | 0.157 | 0.909 |
-| 10 | 10.3 | 1.02 | 0.584 | 0.572 | 0.070 | 0.907 |
-| 15 | 16.8 | 1.68 | 0.546 | 0.518 | 0.017 | 0.901 |
-| 20 | 22.7 | 2.24 | 0.518 | 0.480 | 0.005 | 0.901 |
-| 25 | 27.3 | 2.87 | 0.478 | 0.441 | 0.001 | 0.901 |
-| 30 | 34.3 | 3.02 | 0.462 | 0.422 | 0.000 | 0.900 |
-
-Five repetitions give C(5,2) = 10 pairs; each score is the mean over those 10, then averaged over images.
-
-| column | how it is computed | reading |
-|---|---|---|
-| mean actual | token count averaged over all captions at that length | how far the model overshoots the request |
-| length sd | sd of token count across one image's 5 repetitions | 0 = same length every time |
-| token overlap | Jaccard of two repetitions' token sets | 1 = same words every time |
-| content overlap | the same after removing function words | isolates *what* was described from *how* it was phrased |
-| identical | share of the 10 pairs with the same string | 1 = generation is deterministic |
-| names class consistently | share of images where all 5 agree on whether a class term appears | below 1 = for those images, whether the caption leaks its label is itself random |
-
-**Two repetitions of the same image share under half their words at 30 words**, and by 15 words two identical captions are essentially never produced. The captioner also overshoots the request at every length — asked for 30, it writes 34.3.
-
-The last column matters for the leakage result: **the class name appears in all five repetitions or none of them about 90% of the time**, so in the remaining 10% whether a caption leaks its label is itself a coin flip.
 
 ## 7. What survives a rerun
 

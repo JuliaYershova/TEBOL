@@ -16,11 +16,11 @@ What it writes, and why each file exists:
         image -> fold, per repeat. Written once and reused by every arm, which
         is what makes the arm differences paired and therefore testable.
 
-    results/metrics/stage3/folds.csv
+    results/metrics/folds.csv
         one row per (pair, arm, setup, repeat, fold, level, metric). Long, so
         every later question is a groupby rather than a bespoke script.
 
-    results/metrics/stage3/summary.csv
+    results/metrics/summary.csv
         the same aggregated to mean / sd / t-interval over the 25 folds, plus
         a bootstrap interval over images at the image level.
 
@@ -72,7 +72,7 @@ from tebol.vectors_io import load_index  # noqa: E402
 PAIRS = ("acousticguitar_violin", "ambulance_firetruck", "ant_bee",
          "cucumber_zucchini", "hotpot_vase")
 
-METRICS_DIR = ROOT / "results" / "metrics" / "stage3"
+METRICS_DIR = ROOT / "results" / "metrics"
 FOLDS_DIR = ROOT / "results" / "folds"
 
 #: max_iter well above the default 100: 2560 dimensions do not converge in 100

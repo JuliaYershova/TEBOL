@@ -1,0 +1,241 @@
+pair,class,words,tier,tier_name,captions,with_term,pct
+acousticguitar_violin,acousticguitar,3,1,Class name,10085,5927,58.77045116509668
+acousticguitar_violin,acousticguitar,3,2,Synonyms,10085,93,0.9221616261774913
+acousticguitar_violin,acousticguitar,3,3,Head noun,10085,9238,91.60138820029748
+acousticguitar_violin,acousticguitar,5,1,Class name,10085,7054,69.9454635597422
+acousticguitar_violin,acousticguitar,5,2,Synonyms,10085,147,1.457610312345067
+acousticguitar_violin,acousticguitar,5,3,Head noun,10085,9910,98.26474962816063
+acousticguitar_violin,acousticguitar,7,1,Class name,10085,7288,72.26574119980168
+acousticguitar_violin,acousticguitar,7,2,Synonyms,10085,188,1.864154685176004
+acousticguitar_violin,acousticguitar,7,3,Head noun,10085,9957,98.73078829945463
+acousticguitar_violin,acousticguitar,10,1,Class name,10085,7951,78.83986117997026
+acousticguitar_violin,acousticguitar,10,2,Synonyms,10085,192,1.9038175508180466
+acousticguitar_violin,acousticguitar,10,3,Head noun,10085,9992,99.0778383738225
+acousticguitar_violin,acousticguitar,15,1,Class name,10085,7622,75.57759048091225
+acousticguitar_violin,acousticguitar,15,2,Synonyms,10085,242,2.3996033713435794
+acousticguitar_violin,acousticguitar,15,3,Head noun,10085,10006,99.21665840356965
+acousticguitar_violin,acousticguitar,20,1,Class name,10085,7611,75.46851760039662
+acousticguitar_violin,acousticguitar,20,2,Synonyms,10085,174,1.7253346554288547
+acousticguitar_violin,acousticguitar,20,3,Head noun,10085,10013,99.28606841844324
+acousticguitar_violin,acousticguitar,25,1,Class name,10085,7644,75.79573624194349
+acousticguitar_violin,acousticguitar,25,2,Synonyms,10085,175,1.7352503718393655
+acousticguitar_violin,acousticguitar,25,3,Head noun,10085,9995,99.10758552305404
+acousticguitar_violin,acousticguitar,30,1,Class name,10085,7737,76.71789786812097
+acousticguitar_violin,acousticguitar,30,2,Synonyms,10085,136,1.3485374318294496
+acousticguitar_violin,acousticguitar,30,3,Head noun,10085,10016,99.31581556767476
+acousticguitar_violin,violin,3,1,Class name,6650,4808,72.30075187969925
+acousticguitar_violin,violin,3,2,Synonyms,6650,10,0.15037593984962405
+acousticguitar_violin,violin,3,3,Head noun,6650,0,0.0
+acousticguitar_violin,violin,5,1,Class name,6650,5643,84.85714285714286
+acousticguitar_violin,violin,5,2,Synonyms,6650,20,0.3007518796992481
+acousticguitar_violin,violin,5,3,Head noun,6650,0,0.0
+acousticguitar_violin,violin,7,1,Class name,6650,5865,88.19548872180451
+acousticguitar_violin,violin,7,2,Synonyms,6650,19,0.2857142857142857
+acousticguitar_violin,violin,7,3,Head noun,6650,0,0.0
+acousticguitar_violin,violin,10,1,Class name,6650,6050,90.97744360902256
+acousticguitar_violin,violin,10,2,Synonyms,6650,14,0.21052631578947367
+acousticguitar_violin,violin,10,3,Head noun,6650,0,0.0
+acousticguitar_violin,violin,15,1,Class name,6650,6074,91.33834586466165
+acousticguitar_violin,violin,15,2,Synonyms,6650,17,0.2556390977443609
+acousticguitar_violin,violin,15,3,Head noun,6650,0,0.0
+acousticguitar_violin,violin,20,1,Class name,6650,6085,91.50375939849624
+acousticguitar_violin,violin,20,2,Synonyms,6650,20,0.3007518796992481
+acousticguitar_violin,violin,20,3,Head noun,6650,0,0.0
+acousticguitar_violin,violin,25,1,Class name,6650,6083,91.47368421052632
+acousticguitar_violin,violin,25,2,Synonyms,6650,25,0.37593984962406013
+acousticguitar_violin,violin,25,3,Head noun,6650,0,0.0
+acousticguitar_violin,violin,30,1,Class name,6650,6166,92.7218045112782
+acousticguitar_violin,violin,30,2,Synonyms,6650,13,0.19548872180451127
+acousticguitar_violin,violin,30,3,Head noun,6650,0,0.0
+ambulance_firetruck,ambulance,3,1,Class name,7550,6548,86.72847682119205
+ambulance_firetruck,ambulance,3,2,Synonyms,7550,255,3.377483443708609
+ambulance_firetruck,ambulance,3,3,Head noun,7550,0,0.0
+ambulance_firetruck,ambulance,5,1,Class name,7550,6713,88.91390728476821
+ambulance_firetruck,ambulance,5,2,Synonyms,7550,182,2.410596026490066
+ambulance_firetruck,ambulance,5,3,Head noun,7550,0,0.0
+ambulance_firetruck,ambulance,7,1,Class name,7550,6768,89.64238410596026
+ambulance_firetruck,ambulance,7,2,Synonyms,7550,98,1.2980132450331126
+ambulance_firetruck,ambulance,7,3,Head noun,7550,0,0.0
+ambulance_firetruck,ambulance,10,1,Class name,7550,6785,89.86754966887418
+ambulance_firetruck,ambulance,10,2,Synonyms,7550,138,1.8278145695364238
+ambulance_firetruck,ambulance,10,3,Head noun,7550,0,0.0
+ambulance_firetruck,ambulance,15,1,Class name,7550,6767,89.62913907284768
+ambulance_firetruck,ambulance,15,2,Synonyms,7550,207,2.7417218543046356
+ambulance_firetruck,ambulance,15,3,Head noun,7550,0,0.0
+ambulance_firetruck,ambulance,20,1,Class name,7550,6772,89.69536423841059
+ambulance_firetruck,ambulance,20,2,Synonyms,7550,267,3.5364238410596025
+ambulance_firetruck,ambulance,20,3,Head noun,7550,0,0.0
+ambulance_firetruck,ambulance,25,1,Class name,7550,6749,89.3907284768212
+ambulance_firetruck,ambulance,25,2,Synonyms,7550,301,3.986754966887417
+ambulance_firetruck,ambulance,25,3,Head noun,7550,0,0.0
+ambulance_firetruck,ambulance,30,1,Class name,7550,6796,90.01324503311258
+ambulance_firetruck,ambulance,30,2,Synonyms,7550,415,5.496688741721854
+ambulance_firetruck,ambulance,30,3,Head noun,7550,0,0.0
+ambulance_firetruck,firetruck,3,1,Class name,6780,6094,89.88200589970502
+ambulance_firetruck,firetruck,3,2,Synonyms,6780,1,0.014749262536873156
+ambulance_firetruck,firetruck,3,3,Head noun,6780,6025,88.86430678466077
+ambulance_firetruck,firetruck,5,1,Class name,6780,6014,88.70206489675516
+ambulance_firetruck,firetruck,5,2,Synonyms,6780,1,0.014749262536873156
+ambulance_firetruck,firetruck,5,3,Head noun,6780,6386,94.18879056047197
+ambulance_firetruck,firetruck,7,1,Class name,6780,5876,86.66666666666667
+ambulance_firetruck,firetruck,7,2,Synonyms,6780,1,0.014749262536873156
+ambulance_firetruck,firetruck,7,3,Head noun,6780,6349,93.64306784660766
+ambulance_firetruck,firetruck,10,1,Class name,6780,5443,80.28023598820059
+ambulance_firetruck,firetruck,10,2,Synonyms,6780,2,0.029498525073746312
+ambulance_firetruck,firetruck,10,3,Head noun,6780,6259,92.31563421828909
+ambulance_firetruck,firetruck,15,1,Class name,6780,4894,72.18289085545723
+ambulance_firetruck,firetruck,15,2,Synonyms,6780,6,0.08849557522123894
+ambulance_firetruck,firetruck,15,3,Head noun,6780,6132,90.4424778761062
+ambulance_firetruck,firetruck,20,1,Class name,6780,4719,69.60176991150442
+ambulance_firetruck,firetruck,20,2,Synonyms,6780,26,0.3834808259587021
+ambulance_firetruck,firetruck,20,3,Head noun,6780,6062,89.41002949852508
+ambulance_firetruck,firetruck,25,1,Class name,6780,4662,68.76106194690266
+ambulance_firetruck,firetruck,25,2,Synonyms,6780,28,0.41297935103244837
+ambulance_firetruck,firetruck,25,3,Head noun,6780,6042,89.11504424778761
+ambulance_firetruck,firetruck,30,1,Class name,6780,4767,70.30973451327434
+ambulance_firetruck,firetruck,30,2,Synonyms,6780,46,0.6784660766961652
+ambulance_firetruck,firetruck,30,3,Head noun,6780,6183,91.19469026548673
+ant_bee,ant,3,1,Class name,8280,7512,90.72463768115942
+ant_bee,ant,3,2,Synonyms,8280,0,0.0
+ant_bee,ant,3,3,Head noun,8280,0,0.0
+ant_bee,ant,5,1,Class name,8280,7564,91.35265700483092
+ant_bee,ant,5,2,Synonyms,8280,0,0.0
+ant_bee,ant,5,3,Head noun,8280,0,0.0
+ant_bee,ant,7,1,Class name,8280,7564,91.35265700483092
+ant_bee,ant,7,2,Synonyms,8280,0,0.0
+ant_bee,ant,7,3,Head noun,8280,0,0.0
+ant_bee,ant,10,1,Class name,8280,7522,90.84541062801932
+ant_bee,ant,10,2,Synonyms,8280,0,0.0
+ant_bee,ant,10,3,Head noun,8280,0,0.0
+ant_bee,ant,15,1,Class name,8280,7518,90.79710144927536
+ant_bee,ant,15,2,Synonyms,8280,0,0.0
+ant_bee,ant,15,3,Head noun,8280,0,0.0
+ant_bee,ant,20,1,Class name,8280,7540,91.06280193236715
+ant_bee,ant,20,2,Synonyms,8280,0,0.0
+ant_bee,ant,20,3,Head noun,8280,0,0.0
+ant_bee,ant,25,1,Class name,8280,7565,91.36473429951691
+ant_bee,ant,25,2,Synonyms,8280,0,0.0
+ant_bee,ant,25,3,Head noun,8280,0,0.0
+ant_bee,ant,30,1,Class name,8280,7591,91.67874396135265
+ant_bee,ant,30,2,Synonyms,8280,5,0.06038647342995169
+ant_bee,ant,30,3,Head noun,8280,0,0.0
+ant_bee,bee,3,1,Class name,8360,6308,75.45454545454545
+ant_bee,bee,3,2,Synonyms,8360,1546,18.492822966507177
+ant_bee,bee,3,3,Head noun,8360,0,0.0
+ant_bee,bee,5,1,Class name,8360,5859,70.08373205741627
+ant_bee,bee,5,2,Synonyms,8360,2055,24.58133971291866
+ant_bee,bee,5,3,Head noun,8360,0,0.0
+ant_bee,bee,7,1,Class name,8360,5550,66.38755980861244
+ant_bee,bee,7,2,Synonyms,8360,2375,28.40909090909091
+ant_bee,bee,7,3,Head noun,8360,0,0.0
+ant_bee,bee,10,1,Class name,8360,4872,58.27751196172249
+ant_bee,bee,10,2,Synonyms,8360,3080,36.8421052631579
+ant_bee,bee,10,3,Head noun,8360,0,0.0
+ant_bee,bee,15,1,Class name,8360,3957,47.33253588516747
+ant_bee,bee,15,2,Synonyms,8360,3969,47.47607655502392
+ant_bee,bee,15,3,Head noun,8360,0,0.0
+ant_bee,bee,20,1,Class name,8360,3320,39.71291866028708
+ant_bee,bee,20,2,Synonyms,8360,4700,56.2200956937799
+ant_bee,bee,20,3,Head noun,8360,0,0.0
+ant_bee,bee,25,1,Class name,8360,3631,43.433014354066984
+ant_bee,bee,25,2,Synonyms,8360,4963,59.366028708133975
+ant_bee,bee,25,3,Head noun,8360,0,0.0
+ant_bee,bee,30,1,Class name,8360,4988,59.665071770334926
+ant_bee,bee,30,2,Synonyms,8360,5244,62.72727272727273
+ant_bee,bee,30,3,Head noun,8360,0,0.0
+cucumber_zucchini,cucumber,3,1,Class name,6340,3633,57.30283911671924
+cucumber_zucchini,cucumber,3,2,Synonyms,6340,0,0.0
+cucumber_zucchini,cucumber,3,3,Head noun,6340,0,0.0
+cucumber_zucchini,cucumber,5,1,Class name,6340,4378,69.05362776025237
+cucumber_zucchini,cucumber,5,2,Synonyms,6340,0,0.0
+cucumber_zucchini,cucumber,5,3,Head noun,6340,0,0.0
+cucumber_zucchini,cucumber,7,1,Class name,6340,4540,71.60883280757098
+cucumber_zucchini,cucumber,7,2,Synonyms,6340,0,0.0
+cucumber_zucchini,cucumber,7,3,Head noun,6340,0,0.0
+cucumber_zucchini,cucumber,10,1,Class name,6340,4876,76.90851735015772
+cucumber_zucchini,cucumber,10,2,Synonyms,6340,0,0.0
+cucumber_zucchini,cucumber,10,3,Head noun,6340,0,0.0
+cucumber_zucchini,cucumber,15,1,Class name,6340,5210,82.17665615141956
+cucumber_zucchini,cucumber,15,2,Synonyms,6340,1,0.015772870662460567
+cucumber_zucchini,cucumber,15,3,Head noun,6340,0,0.0
+cucumber_zucchini,cucumber,20,1,Class name,6340,5312,83.78548895899054
+cucumber_zucchini,cucumber,20,2,Synonyms,6340,0,0.0
+cucumber_zucchini,cucumber,20,3,Head noun,6340,0,0.0
+cucumber_zucchini,cucumber,25,1,Class name,6340,5353,84.43217665615143
+cucumber_zucchini,cucumber,25,2,Synonyms,6340,0,0.0
+cucumber_zucchini,cucumber,25,3,Head noun,6340,0,0.0
+cucumber_zucchini,cucumber,30,1,Class name,6340,5388,84.98422712933754
+cucumber_zucchini,cucumber,30,2,Synonyms,6340,2,0.031545741324921134
+cucumber_zucchini,cucumber,30,3,Head noun,6340,0,0.0
+cucumber_zucchini,zucchini,3,1,Class name,5465,4672,85.48947849954254
+cucumber_zucchini,zucchini,3,2,Synonyms,5465,1,0.018298261665141813
+cucumber_zucchini,zucchini,3,3,Head noun,5465,0,0.0
+cucumber_zucchini,zucchini,5,1,Class name,5465,4936,90.32021957913999
+cucumber_zucchini,zucchini,5,2,Synonyms,5465,1,0.018298261665141813
+cucumber_zucchini,zucchini,5,3,Head noun,5465,0,0.0
+cucumber_zucchini,zucchini,7,1,Class name,5465,4952,90.61299176578225
+cucumber_zucchini,zucchini,7,2,Synonyms,5465,6,0.10978956999085086
+cucumber_zucchini,zucchini,7,3,Head noun,5465,0,0.0
+cucumber_zucchini,zucchini,10,1,Class name,5465,5087,93.0832570905764
+cucumber_zucchini,zucchini,10,2,Synonyms,5465,9,0.16468435498627632
+cucumber_zucchini,zucchini,10,3,Head noun,5465,0,0.0
+cucumber_zucchini,zucchini,15,1,Class name,5465,5127,93.81518755718207
+cucumber_zucchini,zucchini,15,2,Synonyms,5465,10,0.18298261665141813
+cucumber_zucchini,zucchini,15,3,Head noun,5465,0,0.0
+cucumber_zucchini,zucchini,20,1,Class name,5465,5178,94.7483989021043
+cucumber_zucchini,zucchini,20,2,Synonyms,5465,10,0.18298261665141813
+cucumber_zucchini,zucchini,20,3,Head noun,5465,0,0.0
+cucumber_zucchini,zucchini,25,1,Class name,5465,5174,94.67520585544374
+cucumber_zucchini,zucchini,25,2,Synonyms,5465,11,0.2012808783165599
+cucumber_zucchini,zucchini,25,3,Head noun,5465,0,0.0
+cucumber_zucchini,zucchini,30,1,Class name,5465,5188,94.93138151875571
+cucumber_zucchini,zucchini,30,2,Synonyms,5465,10,0.18298261665141813
+cucumber_zucchini,zucchini,30,3,Head noun,5465,0,0.0
+hotpot_vase,hotpot,3,1,Class name,5745,1264,22.001740644038293
+hotpot_vase,hotpot,3,2,Synonyms,5745,5,0.08703220191470844
+hotpot_vase,hotpot,3,3,Head noun,5745,1268,22.07136640557006
+hotpot_vase,hotpot,5,1,Class name,5745,1990,34.63881636205396
+hotpot_vase,hotpot,5,2,Synonyms,5745,5,0.08703220191470844
+hotpot_vase,hotpot,5,3,Head noun,5745,2667,46.422976501305484
+hotpot_vase,hotpot,7,1,Class name,5745,2015,35.0739773716275
+hotpot_vase,hotpot,7,2,Synonyms,5745,1,0.017406440382941687
+hotpot_vase,hotpot,7,3,Head noun,5745,3058,53.228894691035684
+hotpot_vase,hotpot,10,1,Class name,5745,2025,35.24804177545692
+hotpot_vase,hotpot,10,2,Synonyms,5745,4,0.06962576153176675
+hotpot_vase,hotpot,10,3,Head noun,5745,3425,59.617058311575285
+hotpot_vase,hotpot,15,1,Class name,5745,2035,35.42210617928634
+hotpot_vase,hotpot,15,2,Synonyms,5745,2,0.034812880765883375
+hotpot_vase,hotpot,15,3,Head noun,5745,3695,64.31679721496954
+hotpot_vase,hotpot,20,1,Class name,5745,2121,36.91906005221932
+hotpot_vase,hotpot,20,2,Synonyms,5745,2,0.034812880765883375
+hotpot_vase,hotpot,20,3,Head noun,5745,3831,66.68407310704961
+hotpot_vase,hotpot,25,1,Class name,5745,2110,36.72758920800696
+hotpot_vase,hotpot,25,2,Synonyms,5745,2,0.034812880765883375
+hotpot_vase,hotpot,25,3,Head noun,5745,3835,66.75369886858138
+hotpot_vase,hotpot,30,1,Class name,5745,2184,38.01566579634465
+hotpot_vase,hotpot,30,2,Synonyms,5745,2,0.034812880765883375
+hotpot_vase,hotpot,30,3,Head noun,5745,3923,68.28546562228024
+hotpot_vase,vase,3,1,Class name,6500,4198,64.58461538461539
+hotpot_vase,vase,3,2,Synonyms,6500,93,1.4307692307692308
+hotpot_vase,vase,3,3,Head noun,6500,0,0.0
+hotpot_vase,vase,5,1,Class name,6500,5091,78.32307692307693
+hotpot_vase,vase,5,2,Synonyms,6500,78,1.2
+hotpot_vase,vase,5,3,Head noun,6500,0,0.0
+hotpot_vase,vase,7,1,Class name,6500,5068,77.96923076923076
+hotpot_vase,vase,7,2,Synonyms,6500,101,1.5538461538461539
+hotpot_vase,vase,7,3,Head noun,6500,0,0.0
+hotpot_vase,vase,10,1,Class name,6500,5029,77.36923076923077
+hotpot_vase,vase,10,2,Synonyms,6500,129,1.9846153846153847
+hotpot_vase,vase,10,3,Head noun,6500,0,0.0
+hotpot_vase,vase,15,1,Class name,6500,4911,75.55384615384615
+hotpot_vase,vase,15,2,Synonyms,6500,172,2.646153846153846
+hotpot_vase,vase,15,3,Head noun,6500,0,0.0
+hotpot_vase,vase,20,1,Class name,6500,4897,75.33846153846154
+hotpot_vase,vase,20,2,Synonyms,6500,210,3.230769230769231
+hotpot_vase,vase,20,3,Head noun,6500,0,0.0
+hotpot_vase,vase,25,1,Class name,6500,4921,75.70769230769231
+hotpot_vase,vase,25,2,Synonyms,6500,257,3.953846153846154
+hotpot_vase,vase,25,3,Head noun,6500,0,0.0
+hotpot_vase,vase,30,1,Class name,6500,5009,77.06153846153846
+hotpot_vase,vase,30,2,Synonyms,6500,310,4.769230769230769
+hotpot_vase,vase,30,3,Head noun,6500,0,0.0

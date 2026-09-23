@@ -38,7 +38,7 @@
 | 8 stochasticity | caption stability: lengths | 8 | 8 | ok |
 | 9 figures | AOPC png | 205 | 205 | ok |
 | 9 figures | AOPC folders | 6 | 6 | ok |
-| 9 figures | caption-length png | >0 | 1 | ok |
+| 9 figures | caption-length png | >0 | 6 | ok |
 | 10 reports | markdown reports | >0 | 9 | ok |
 
 Regenerate with `python scripts/16_audit.py`.
