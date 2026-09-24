@@ -45,7 +45,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
 from tebol import folds as folds_mod                       # noqa: E402
-from tebol.arms import ArmData, caption_means, load_arm, nonempty   # noqa: E402
+from tebol.arms import caption_means, load_classes   # noqa: E402
 from tebol.stats import summarize                          # noqa: E402
 
 RAW = ROOT / "data" / "raw"
@@ -54,58 +54,6 @@ FOLDS = ROOT / "results" / "folds"
 
 EXPERIMENTS = {"food": ["cucumber", "zucchini", "hotpot"]}
 LENGTHS = (3, 5, 7, 10, 15, 20, 25, 30)
-
-
-def class_to_pair() -> dict[str, str]:
-    """class -> the pair folder its images live in."""
-    return {c.name: p.name for p in sorted(RAW.iterdir()) if p.is_dir()
-            for c in sorted(p.iterdir()) if c.is_dir()}
-
-
-def merge(parts: list[ArmData]) -> ArmData:
-    """Concatenate arms from different pairs.
-
-    Safe because `rows` indexes the one global vocab table, so the word ids
-    mean the same thing in every pair; only the CSR offsets need rebasing.
-    """
-    rows = np.concatenate([p.rows for p in parts])
-    offsets = [np.zeros(1, dtype=np.int64)]
-    base = 0
-    for p in parts:
-        offsets.append(p.offsets[1:] + base)
-        base += len(p.rows)
-    return ArmData(
-        pair="+".join(dict.fromkeys(p.pair for p in parts)),
-        arm=parts[0].arm, setup=parts[0].setup,
-        stem=np.concatenate([p.stem for p in parts]),
-        rep=np.concatenate([p.rep for p in parts]),
-        cls=np.concatenate([p.cls for p in parts]),
-        rows=rows, offsets=np.concatenate(offsets), store=parts[0].store,
-    )
-
-
-def load(classes: list[str], arm: str, setup: int) -> ArmData:
-    """One design matrix over several classes, filtered to those classes."""
-    c2p = class_to_pair()
-    missing = [c for c in classes if c not in c2p]
-    if missing:
-        sys.exit(f"no images for {missing}; have {sorted(c2p)}")
-
-    parts = []
-    for pair in dict.fromkeys(c2p[c] for c in classes):
-        d = load_arm(ROOT, pair, arm, setup)
-        keep = np.isin(d.cls, classes) & nonempty(d)
-        sel = np.flatnonzero(keep)
-        flat = [d.rows[d.offsets[i]:d.offsets[i + 1]] for i in sel]
-        off = np.zeros(len(sel) + 1, dtype=np.int64)
-        off[1:] = np.cumsum([len(f) for f in flat])
-        parts.append(ArmData(
-            pair=pair, arm=arm, setup=setup,
-            stem=d.stem[sel], rep=d.rep[sel], cls=d.cls[sel],
-            rows=(np.concatenate(flat) if flat
-                  else np.empty(0, np.int32)).astype(np.int32),
-            offsets=off, store=d.store))
-    return merge(parts)
 
 
 def get_folds(name: str, data: ArmData) -> pd.DataFrame:
@@ -159,7 +107,7 @@ def main() -> None:
     rows, conf_rows, word_rows = [], [], []
     worst_err = 0.0
     for setup in args.setups:
-        data = load(wanted, args.arm, setup)
+        data = load_classes(ROOT, wanted, args.arm, setup)
         classes = sorted(set(data.cls))
         X = caption_means(data)
         y = data.cls

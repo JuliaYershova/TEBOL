@@ -42,6 +42,7 @@ design matrix is a mean over them.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -166,6 +167,59 @@ def load_arm(root: Path, pair: str, arm_name: str, setup: int) -> ArmData:
         cls=np.array([str(c) for c in index.cls[sel]]),
         rows=rows, offsets=offsets, store=store,
     )
+
+
+def merge_arms(parts: list[ArmData]) -> ArmData:
+    """Concatenate arms loaded from different pairs.
+
+    Safe because `rows` indexes the one global vocab table, so a word id means
+    the same thing in every pair; only the CSR offsets need rebasing.
+    """
+    rows = np.concatenate([p.rows for p in parts]) if parts else np.empty(0, np.int32)
+    offsets, base = [np.zeros(1, dtype=np.int64)], 0
+    for p in parts:
+        offsets.append(p.offsets[1:] + base)
+        base += len(p.rows)
+    return ArmData(
+        pair="+".join(dict.fromkeys(p.pair for p in parts)),
+        arm=parts[0].arm, setup=parts[0].setup,
+        stem=np.concatenate([p.stem for p in parts]),
+        rep=np.concatenate([p.rep for p in parts]),
+        cls=np.concatenate([p.cls for p in parts]),
+        rows=rows.astype(np.int32),
+        offsets=np.concatenate(offsets), store=parts[0].store,
+    )
+
+
+def load_classes(root: Path, classes: Sequence[str], arm_name: str,
+                 setup: int) -> ArmData:
+    """One design matrix over any set of classes, from whichever pairs hold them.
+
+    The multiclass experiments need classes that live in different pair files;
+    this loads each pair once, keeps only the wanted classes and the texts that
+    kept a word, and merges. Captions with no embedded word are dropped here
+    rather than left as zero rows for the caller to notice.
+    """
+    where = {c.name: p.name for p in sorted((root / "data" / "raw").iterdir())
+             if p.is_dir() for c in sorted(p.iterdir()) if c.is_dir()}
+    missing = [c for c in classes if c not in where]
+    if missing:
+        raise ValueError(f"no images for {missing}; have {sorted(where)}")
+
+    parts = []
+    for pair in dict.fromkeys(where[c] for c in classes):
+        d = load_arm(root, pair, arm_name, setup)
+        sel = np.flatnonzero(np.isin(d.cls, list(classes)) & nonempty(d))
+        flat = [d.rows[d.offsets[i]:d.offsets[i + 1]] for i in sel]
+        off = np.zeros(len(sel) + 1, dtype=np.int64)
+        off[1:] = np.cumsum([len(f) for f in flat])
+        parts.append(ArmData(
+            pair=pair, arm=arm_name, setup=setup,
+            stem=d.stem[sel], rep=d.rep[sel], cls=d.cls[sel],
+            rows=(np.concatenate(flat) if flat
+                  else np.empty(0, np.int32)).astype(np.int32),
+            offsets=off, store=d.store))
+    return merge_arms(parts)
 
 
 def caption_means(data: ArmData) -> np.ndarray:
