@@ -58,6 +58,14 @@ artifacts/explanations/*/*/*/*/*
 !artifacts/bbox/*/
 artifacts/bbox/*/*
 !artifacts/bbox/*/*.jsonl
+
+# the zero-shot replies ARE committed: 5.4 MB, 14,351 calls to the school's
+# Qwen3-VL. The other baselines are not -- CLIP, CoCa and both probes rebuild
+# from the checkpoints in minutes, and strmatch reads the committed captions.
+!artifacts/baselines/
+!artifacts/baselines/*/
+artifacts/baselines/*/*
+!artifacts/baselines/*/zeroshot__*.jsonl
 *.pkl
 .env
 .env.*
