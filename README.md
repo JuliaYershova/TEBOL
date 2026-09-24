@@ -1,95 +1,51 @@
 # TEBOL
 
 Explaining an image classifier that reads generated captions rather than pixels.
-A vision model describes each photograph, the words are embedded, logistic
-regression classifies the mean-pooled vector, and SMER decomposes that
-prediction back onto the words. LIME is the comparison; AOPC is the test.
-
-**Five binary pairs** — acousticguitar/violin, ambulance/firetruck, ant/bee,
-cucumber/zucchini, hotpot/vase. **574,040 captions** per variant: every image
-described at 8 lengths (3–30 words) × 5 repetitions.
-
-Every number below traces to a script and a report. Start with
-[`results/reports/00_audit.md`](results/reports/00_audit.md) — 36 checks over
-the whole pipeline — and [`results/reports/README.md`](results/reports/README.md)
-for the findings.
+Five binary pairs: acousticguitar/violin, ambulance/firetruck, ant/bee,
+cucumber/zucchini, hotpot/vase.
 
 ## Pipeline
 
-| # | script | what it does | output |
-|---|---|---|---|
-| 1 | `01_caption.py` | asks the VLM for a caption, 8 lengths × 5 reps per image | `artifacts/captions/` |
-| — | `class_leakage.py` | measures how often a caption names its own class, and writes the class-stripped twin of every caption | `--noclass.jsonl`, [`03_class_leakage.md`](results/reports/03_class_leakage.md) |
-| — | `build_caption_tags.py` | pulls the human Flickr tags from ImageNet-Captions | `data/manifest/tags/` |
-| 2 | `02_embed.py` | embeds each distinct word once, then joins captions to vocabulary rows | `artifacts/embeddings/` |
-| 3 | `03_train_smer.py` | fits logistic regression under 5-fold × 5-repeat CV and decomposes it into per-word logits | `coefs.npz`, `oof.parquet`, `smer_words.parquet` |
-| 4 | `09_lime.py` | LIME on the same captions, for comparison | `lime_words*.parquet` |
-| 5 | `07_aopc.py` | AOPC curves for every ranking | `aopc.csv`, [`05_aopc.md`](results/reports/05_aopc.md) |
-| 6 | `04_compare_arms.py` | paired significance tests between arms | `comparisons.csv` |
-| 7 | `10_figure_sets.py` | 205 figures in six comparison folders | `results/figures/aopc/` |
-| 8 | `11/12_*.py`, `15_caption_stability.py` | how much survives a rerun | [`02_caption_stability.md`](results/reports/02_caption_stability.md) |
-| 9 | `13_report.py`, `16_audit.py` | the summary and the completeness audit | [`README`](results/reports/README.md), [`audit`](results/reports/00_audit.md) |
-
-`06_worked_examples.py`, `05_report_accuracy.py` and `14_caption_length.py`
-produce supporting tables; `coverage_report.py` counts the raw data.
-
-## The five arms
-
-What text the classifier sees. They separate effects the naive setup conflates.
-
-| arm | text | scope |
+| # | step | script |
 |---|---|---|
-| `caption` | descriptions as generated | all captioned images |
-| `caption_noclass` | the same, class name removed | all captioned images |
-| `tags` | human ImageNet-Captions tags | tag-covered images |
-| `caption_tagsub` | descriptions | tag-covered images |
-| `caption_noclass_tagsub` | descriptions, class name removed | tag-covered images |
+| 1 | A vision model describes each photograph, 8 lengths × 5 repetitions. | `01_caption.py` |
+| 2 | Every distinct word is embedded once; a caption is the mean of its words. | `02_embed.py` |
+| 3 | Logistic regression classifies that vector, 5-fold CV × 5 repeats. | `03_train_smer.py` |
+| 4 | SMER decomposes each prediction back onto the individual words. | `03_train_smer.py` |
+| 5 | LIME explains the same captions, as the comparison. | `09_lime.py` |
+| 6 | AOPC tests both rankings by deleting their top words. | `07_aopc.py` |
+| 7 | The top-3 words are given to the vision model, which returns a box for them. | `23_bbox.py` |
 
-Any figure containing a tag line uses the tag-covered subset for *every* line —
-tags exist for about a third of the corpus, and mixing scopes would confound
-representation with sample.
+## Evaluation baselines
 
-## What was found
+Each baseline removes one part of the pipeline, so the accuracy it loses is
+what that part contributes. All are scored on the same images, the same
+5 × 5 folds and the same image-level rule.
 
-1. **Most reported accuracy is leakage.** 85% of captions name their own class;
-   removing it costs up to 0.245 accuracy — except hotpot/vase, which loses
-   nothing.
-2. **Descriptions do not beat human tags** when both are leaky.
-3. **Caption length trades one thing for another**: accuracy peaks at ~5 words
-   with the class name present, 15–30 without it.
-4. **SMER's advantage over LIME grows with length**, 0.006 at 3 words to 0.346
-   at 30 — LIME's perturbation budget cannot cover a 2³⁴ subset space.
-5. **The captioner is the dominant source of instability**, not the model and
-   not the explainer.
+| baseline | what it removes |
+|---|---|
+| **LR no-class** | the class word, deleted from every caption |
+| **name in text** | the classifier — predict whichever class the caption names |
+| **zero-shot** | the captions and the training; the VLM is asked to classify directly |
+| **CLIP / CoCa** | the same, with a contrastive model and the class names in the prompt |
+| **CLIP / CoCa probe** | the captions only — the same classifier on frozen image vectors, never shown a class name |
 
-Detail in [`results/reports/README.md`](results/reports/README.md).
+Accuracy at 5-word captions, image level, ± is the 95% half-width:
 
-## Layout
+| pair | LR caption | LR no-class | name in text | zero-shot | CLIP | CLIP probe | CoCa | CoCa probe |
+|---|---|---|---|---|---|---|---|---|
+| acousticguitar/violin | **0.9907** ±.001 | 0.8177 ±.006 | 0.8440 ±.012 | 0.9848 ±.004 | 0.9737 ±.005 | 0.9822 ±.002 | 0.9788 ±.005 | 0.9830 ±.002 |
+| ambulance/firetruck | 0.9852 ±.002 | 0.8794 ±.007 | 0.9225 ±.010 | 0.9853 ±.004 | 0.9822 ±.005 | **0.9861** ±.002 | 0.9787 ±.005 | 0.9788 ±.002 |
+| ant/bee | **0.9849** ±.002 | 0.8868 ±.005 | 0.8975 ±.010 | 0.9772 ±.005 | 0.9426 ±.008 | 0.9689 ±.003 | 0.9384 ±.008 | 0.9606 ±.003 |
+| cucumber/zucchini | **0.9410** ±.004 | 0.7087 ±.010 | 0.8191 ±.015 | 0.8882 ±.013 | 0.6709 ±.019 | 0.8242 ±.005 | 0.7150 ±.018 | 0.8240 ±.005 |
+| hotpot/vase | 0.9976 ±.001 | 0.9967 ±.001 | 0.6460 ±.019 | 0.9980 ±.002 | 0.9951 ±.003 | **0.9992** ±.001 | 0.9980 ±.002 | 0.9988 ±.001 |
+
+Intervals are not the same kind and should not be compared as widths: a
+t-interval over 25 folds where a model is refit, a bootstrap over images where
+it is not. Paired differences and significance are in
+[`results/metrics/baselines_w05.csv`](results/metrics/baselines_w05.csv).
 
 ```
-artifacts/   captions, embeddings, models, explanations   (gitignored, large)
-data/        raw images, manifests, ImageNet-Captions
-results/
-  reports/   9 markdown reports, numbered in pipeline order
-  metrics/   the CSVs behind them
-  figures/   205 AOPC figures in 6 folders + caption length
-scripts/     the pipeline, numbered
-src/tebol/   the library the scripts call
+python scripts/24_baselines.py run --pair ant_bee --baseline clip
+python scripts/24_baselines.py table
 ```
-
-## Running it
-
-```bash
-python -m venv .venv && .venv/bin/pip install -r requirements.txt
-cp .env.example .env            # gateway URL, key, model names
-.venv/bin/python scripts/16_audit.py
-```
-
-The audit says what is already complete. Stages 1 and 2 need the inference
-gateway; 3 onwards are local. `03_train_smer.py` takes ~7 minutes for all 165
-configurations, `09_lime.py` ~25, `07_aopc.py` ~10.
-
-## Not done
-
-Bounding boxes. `src/tebol/bbox/` is empty; ground truth exists for 4,531
-images (see [`01_coverage.md`](results/reports/01_coverage.md)).
