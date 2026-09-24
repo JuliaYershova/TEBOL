@@ -59,13 +59,16 @@ artifacts/explanations/*/*/*/*/*
 artifacts/bbox/*/*
 !artifacts/bbox/*/*.jsonl
 
-# the zero-shot replies ARE committed: 5.4 MB, 14,351 calls to the school's
-# Qwen3-VL. The other baselines are not -- CLIP, CoCa and both probes rebuild
-# from the checkpoints in minutes, and strmatch reads the committed captions.
+# every baseline's predictions ARE committed: 140 MB of JSONL, one row per
+# image per baseline. Some of it could be regenerated -- CLIP's weights are on
+# a CDN, strmatch reads the committed captions -- but the zero-shot replies
+# need the school's Qwen server and CoCa's checkpoint cannot be fetched from
+# this network at all, so the set is kept whole rather than split by which
+# half happens to be reproducible this year.
 !artifacts/baselines/
 !artifacts/baselines/*/
 artifacts/baselines/*/*
-!artifacts/baselines/*/zeroshot__*.jsonl
+!artifacts/baselines/*/*.jsonl
 *.pkl
 .env
 .env.*
