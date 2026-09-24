@@ -58,6 +58,17 @@ artifacts/explanations/*/*/*/*/*
 !artifacts/bbox/*/
 artifacts/bbox/*/*
 !artifacts/bbox/*/*.jsonl
+
+# every baseline's predictions ARE committed: 140 MB of JSONL, one row per
+# image per baseline. Some of it could be regenerated -- CLIP's weights are on
+# a CDN, strmatch reads the committed captions -- but the zero-shot replies
+# need the school's Qwen server and CoCa's checkpoint cannot be fetched from
+# this network at all, so the set is kept whole rather than split by which
+# half happens to be reproducible this year.
+!artifacts/baselines/
+!artifacts/baselines/*/
+artifacts/baselines/*/*
+!artifacts/baselines/*/*.jsonl
 *.pkl
 .env
 .env.*
