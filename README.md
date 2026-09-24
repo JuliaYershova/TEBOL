@@ -5,6 +5,9 @@ through semantic concepts rather than visual saliency.
 Five binary pairs: acousticguitar/violin, ambulance/firetruck, ant/bee,
 cucumber/zucchini, hotpot/vase.
 
+The whole pipeline on one photograph, end to end, is in
+[`notebooks/tebol_pipeline.ipynb`](notebooks/tebol_pipeline.ipynb).
+
 ![The four phases of the pipeline](docs/pipeline.png)
 
 ## Pipeline
@@ -51,4 +54,19 @@ it is not. Paired differences and significance are in
 ```
 python scripts/24_baselines.py run --pair ant_bee --baseline clip
 python scripts/24_baselines.py table
+```
+
+## More than two classes
+
+The decomposition does not depend on there being two classes: it needs mean
+pooling and the logit to be linear, and both hold for any number. Run on
+cucumber, zucchini and hotpot, one-vs-rest so each class gets its own weight
+vector and each word one score per class, it rebuilds every logit to 5e-06 —
+float32 rounding. Image-level accuracy 0.9500 ±.003, and hotpot is 99.6%
+correct while the two vegetables take 6.0% and 5.5% of each other.
+
+Worked example: [`notebooks/tebol_multiclass.ipynb`](notebooks/tebol_multiclass.ipynb).
+
+```
+python scripts/25_multiclass.py
 ```
