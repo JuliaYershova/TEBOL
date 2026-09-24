@@ -1,20 +1,23 @@
-# TEBOL
+# TEBOL — Text-Based Embedding for Object Localization
 
-Explaining an image classifier that reads generated captions rather than pixels.
+A novel method for interpretable image classification that explains predictions
+through semantic concepts rather than visual saliency.
 Five binary pairs: acousticguitar/violin, ambulance/firetruck, ant/bee,
 cucumber/zucchini, hotpot/vase.
 
+![The four phases of the pipeline](docs/pipeline.png)
+
 ## Pipeline
 
-| # | step | script |
+| phase | step | script |
 |---|---|---|
-| 1 | A vision model describes each photograph, 8 lengths × 5 repetitions. | `01_caption.py` |
-| 2 | Every distinct word is embedded once; a caption is the mean of its words. | `02_embed.py` |
-| 3 | Logistic regression classifies that vector, 5-fold CV × 5 repeats. | `03_train_smer.py` |
-| 4 | SMER decomposes each prediction back onto the individual words. | `03_train_smer.py` |
-| 5 | LIME explains the same captions, as the comparison. | `09_lime.py` |
-| 6 | AOPC tests both rankings by deleting their top words. | `07_aopc.py` |
-| 7 | The top-3 words are given to the vision model, which returns a box for them. | `23_bbox.py` |
+| **A — Captioning** | A vision model describes each photograph, 8 lengths × 5 repetitions. | `01_caption.py` |
+| **B — Embedding** | Every distinct word is embedded once; a caption is the mean of its word vectors. | `02_embed.py` |
+| **C — Concept discovery** | Logistic regression classifies that mean, 5-fold CV × 5 repeats. | `03_train_smer.py` |
+| | SMER scores each word by its contribution, and ranks them. | `03_train_smer.py` |
+| | LIME explains the same captions, as the comparison. | `09_lime.py` |
+| | AOPC tests both rankings by deleting their top words. | `07_aopc.py` |
+| **D — Localization** | The top-ranked words go back to the vision model, which returns a box for them. | `23_bbox.py` |
 
 ## Evaluation baselines
 
@@ -22,13 +25,13 @@ Each baseline answers the same question as the pipeline, with one step of it
 taken away, so the accuracy it loses is what that step contributes. All are
 scored on the same images, the same 5 × 5 folds and the same image-level rule.
 
-| baseline | what it does | step compared |
+| baseline | what it does | phase compared |
 |---|---|---|
-| **LR no-class** | the same classifier on captions with the class word deleted | 1 — what the description carries once the label is gone |
-| **name in text** | string matching: looks for either class name in the caption text, no model | 3 — is the classifier doing more than reading the label |
-| **zero-shot** | asks the same vision model to classify the image directly | 1–3 — did captioning and training beat asking it outright |
-| **CLIP / CoCa** | picks the nearer of two class prompts by cosine similarity | 1–3 — can a small untrained model do it without captions |
-| **CLIP / CoCa probe** | the same classifier on frozen image vectors, the encoder never shown a class name | 1–2 — is a caption a better representation than the image |
+| **LR no-class** | the same classifier on captions with the class word deleted | A — what the description carries once the label is gone |
+| **name in text** | string matching: looks for either class name in the caption text, no model | C — is the classifier doing more than reading the label |
+| **zero-shot** | asks the same vision model to classify the image directly | A–C — did captioning and training beat asking it outright |
+| **CLIP / CoCa** | picks the nearer of two class prompts by cosine similarity | A–C — can a small untrained model do it without captions |
+| **CLIP / CoCa probe** | the same classifier on frozen image vectors, the encoder never shown a class name | A–B — is a caption a better representation than the image |
 
 Accuracy at 5-word captions, image level, ± is the 95% half-width:
 
