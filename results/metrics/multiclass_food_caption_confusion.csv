@@ -1,0 +1,10 @@
+experiment,arm,setup,true,pred,n
+food,caption,w05,cucumber,cucumber,5810
+food,caption,w05,cucumber,hotpot,147
+food,caption,w05,cucumber,zucchini,383
+food,caption,w05,hotpot,cucumber,15
+food,caption,w05,hotpot,hotpot,5720
+food,caption,w05,hotpot,zucchini,10
+food,caption,w05,zucchini,cucumber,302
+food,caption,w05,zucchini,hotpot,21
+food,caption,w05,zucchini,zucchini,5142
