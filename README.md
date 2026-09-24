@@ -18,17 +18,17 @@ cucumber/zucchini, hotpot/vase.
 
 ## Evaluation baselines
 
-Each baseline removes one part of the pipeline, so the accuracy it loses is
-what that part contributes. All are scored on the same images, the same
-5 × 5 folds and the same image-level rule.
+Each baseline answers the same question as the pipeline, with one step of it
+taken away, so the accuracy it loses is what that step contributes. All are
+scored on the same images, the same 5 × 5 folds and the same image-level rule.
 
-| baseline | what it removes |
-|---|---|
-| **LR no-class** | the class word, deleted from every caption |
-| **name in text** | the classifier — predict whichever class the caption names |
-| **zero-shot** | the captions and the training; the VLM is asked to classify directly |
-| **CLIP / CoCa** | the same, with a contrastive model and the class names in the prompt |
-| **CLIP / CoCa probe** | the captions only — the same classifier on frozen image vectors, never shown a class name |
+| baseline | what it does | step compared |
+|---|---|---|
+| **LR no-class** | the same classifier on captions with the class word deleted | 1 — what the description carries once the label is gone |
+| **name in text** | string matching: looks for either class name in the caption text, no model | 3 — is the classifier doing more than reading the label |
+| **zero-shot** | asks the same vision model to classify the image directly | 1–3 — did captioning and training beat asking it outright |
+| **CLIP / CoCa** | picks the nearer of two class prompts by cosine similarity | 1–3 — can a small untrained model do it without captions |
+| **CLIP / CoCa probe** | the same classifier on frozen image vectors, the encoder never shown a class name | 1–2 — is a caption a better representation than the image |
 
 Accuracy at 5-word captions, image level, ± is the 95% half-width:
 

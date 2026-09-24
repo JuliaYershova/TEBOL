@@ -48,9 +48,10 @@ photograph, or the photograph. That isolates what routing through language
 costs or buys, which zero-shot cannot: zero-shot hands CLIP the class names
 and trains nothing, so it differs from the pipeline in two ways at once.
 
-**strmatch** is the floor the pipeline has to clear. It throws the classifier
-away and reads the label off the caption: if the text names one class and not
-the other, predict it. No embeddings, no training, a dozen lines of matching.
+**strmatch** is the floor the pipeline has to clear. Nothing is predicted:
+the classifier is thrown away and the caption text is searched for either
+class name. If exactly one is there, that is the answer. No embeddings, no
+training, a dozen lines of string matching.
 
 The matcher is imported from scripts/class_leakage.py, so it is the same
 token-level matching that produced the ablated captions -- plurals, hyphen
@@ -674,9 +675,9 @@ def table(args) -> None:
         print(line)
     best = max(cols, key=lambda c: 0)     # column order is the reading order
     legend = [
-        ("name in text", "no model: predict the class whose name appears in "
-                         "the caption,", "class name and inflections only, "
-                         "the five repetitions voting."),
+        ("name in text", "string matching, no model: the class whose name "
+                         "the caption contains,", "class name and inflections "
+                         "only, the five repetitions voting."),
 
         ("CLIP / COCA", "zero-shot: the two class names go in the prompt,",
                         "nothing is trained."),
