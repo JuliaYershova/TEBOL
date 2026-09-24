@@ -5,6 +5,9 @@ through semantic concepts rather than visual saliency.
 Five binary pairs: acousticguitar/violin, ambulance/firetruck, ant/bee,
 cucumber/zucchini, hotpot/vase.
 
+The whole pipeline on one photograph, end to end, is in
+[`notebooks/tebol_pipeline.ipynb`](notebooks/tebol_pipeline.ipynb).
+
 ![The four phases of the pipeline](docs/pipeline.png)
 
 ## Pipeline
