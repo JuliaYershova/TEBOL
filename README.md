@@ -31,9 +31,9 @@ The whole pipeline on one photograph, end to end, is in
 | class names, synonyms | `data/manifest/synset_words.csv`, `data/manifest/class_terms.csv` | |
 | which 14,351 images | the `stem` field of every row of `artifacts/captions/<pair>/*.jsonl.gz` | ImageNet synset and image identifier |
 | Qwen3-VL descriptions | `artifacts/captions/` | gzip, one row per image, length and repetition |
-| GPT-4o configuration | `artifacts/embeddings/openai__text-embedding-ada-002/` | the original run's stored descriptions and ada-002 word vectors, rebuilt for the pipeline by `scripts/build_gpt4o_inputs.py`; for cucumber / zucchini 838 of 1,536 words reuse stored ada-002 vectors and 698 were embedded afresh (`scripts/embed_tokens_ada.py`) |
+| GPT-4o configuration | `artifacts/embeddings/openai__text-embedding-ada-002/` | the word indices and vocabulary of the original run's stored descriptions, which give the word sequence of every description; the ada-002 vectors (32 MB) are not committed and are rebuilt by `scripts/build_gpt4o_inputs.py` from the original run's stored vectors, for cucumber / zucchini with 698 words embedded by `scripts/embed_tokens_ada.py` |
 | user study | `results/metrics/survey_stats.csv`, `survey_counts.csv`, written by `scripts/survey_stats.py` | aggregates of the 270 submitted responses and of the coded free-text comments (`data/manifest/survey_comment_codes.csv`, codes only); the LimeSurvey export holds individual answers and free-text comments and is not part of the repository |
-| word vectors, explanations, results | `artifacts/`, `results/` | what the scripts above write |
+| word vectors, explanations, results | `artifacts/`, `results/` | what the scripts above write. Committed: result tables and figures, per-word SMER rankings, bounding-box replies, VGG16 and other baseline predictions. Not committed because of size: word vectors (`vocab.npz`) and per-description explanations, which `02_embed.py` and `03_train_smer.py` regenerate |
 
 `scripts/qualitative_figures.py` draws the LIME and Grad-CAM figures of the paper and `scripts/lime_figure_checks.py`
 tests them; `scripts/survey_gradcam.py` computes the survey's Grad-CAM heatmaps for the predicted and the named class.
