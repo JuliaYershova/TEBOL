@@ -19,6 +19,14 @@ Two questions were asked, and they are analysed separately.
 Each participant rated one bounding-box image and one heatmap for every class,
 so every comparison is paired within the participant.
 
+Free-text comments. Each comment was read and coded once by a language model, one
+sentiment towards the format per comment (positive, negative, mixed, neutral) and
+any of five themes: C clarity or ease, A accuracy of the display against the object,
+B boundaries or shape of the marked region, O the image hidden under the overlay,
+K colours, gradient or missing legend. The codes (no comment text) are in
+data/manifest/survey_comment_codes.csv, keyed by the row of the export; this script
+checks that every code matches a non-empty comment and counts them.
+
     python scripts/survey_stats.py --data "<path to results-survey214991 (5).csv>"
 """
 
@@ -32,6 +40,7 @@ import pandas as pd
 from scipy import stats
 
 ROOT = Path(__file__).resolve().parent.parent
+CODES = ROOT / "data" / "manifest" / "survey_comment_codes.csv"
 DATA = Path("/Users/kjzg289/Library/CloudStorage/OneDrive-AZCollaboration/"
             "study/2 semestr/Diplom/data/results-survey214991 (5).csv")
 OUT = ROOT / "results" / "metrics"
@@ -107,10 +116,24 @@ def main() -> None:
             rows.append({"analysis": f"participants: {name}", "group": str(value)[:40],
                          "n": int(k)})
     rows.append({"analysis": "participants", "group": "submitted", "n": n})
-    rows.append({"analysis": "comments", "group": "bounding boxes",
-                 "n": int(d["G29Q31"].notna().sum())})
-    rows.append({"analysis": "comments", "group": "heatmaps",
-                 "n": int(d["G29Q33"].notna().sum())})
+    # --- coded free-text comments
+    codes = pd.read_csv(CODES, keep_default_na=False)
+    for fmt, col in (("bb", "G29Q31"), ("ht", "G29Q33")):
+        text = d[col].fillna("").astype(str).str.strip()
+        nonempty = set(text.index[text != ""])
+        c = codes[codes["format"] == fmt]
+        assert set(c["response_row"]) == nonempty and c["response_row"].is_unique, \
+            f"codes do not match the non-empty {fmt} comments"
+        rows.append({"analysis": "comments", "group": f"{fmt}: non-empty",
+                     "n": len(c)})
+        for sent in ("positive", "negative", "mixed", "neutral"):
+            rows.append({"analysis": "comment sentiment", "group": f"{fmt}: {sent}",
+                         "n": int((c["sentiment"] == sent).sum())})
+        for theme, name in (("C", "clarity"), ("A", "accuracy"), ("B", "boundaries"),
+                            ("O", "image hidden"), ("K", "colours")):
+            has = c["themes"].str.contains(theme)
+            rows.append({"analysis": "comment theme", "group": f"{fmt}: {name}",
+                         "n": int(has.sum())})
 
     OUT.mkdir(parents=True, exist_ok=True)
     pd.DataFrame(rows).to_csv(OUT / "survey_stats.csv", index=False)
