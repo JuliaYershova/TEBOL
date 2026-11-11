@@ -54,7 +54,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
 from tebol import vectors_io as vio  # noqa: E402
-from tebol.captions_io import load_rows  # noqa: E402
+from tebol.captions_io import caption_files, load_rows  # noqa: E402
 
 CAPTIONS = ROOT / "artifacts" / "captions"
 TAGS_DIR = ROOT / "data" / "manifest" / "tags"
@@ -93,7 +93,7 @@ def caption_files(pair: str | None, caption_model: str | None, variant: str):
     for pair_dir in sorted(p for p in CAPTIONS.iterdir() if p.is_dir()):
         if pair and pair_dir.name != pair:
             continue
-        files = sorted(pair_dir.glob("*.jsonl"))
+        files = caption_files(pair_dir)
         files = [f for f in files
                  if f.stem.endswith(NOCLASS) == (variant == "noclass")]
         if caption_model:

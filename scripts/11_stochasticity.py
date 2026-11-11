@@ -69,9 +69,12 @@ def stability(rankings: list[np.ndarray], topk: int) -> dict:
     firsts = [int(r[0]) for r in rankings]
     majority = max(set(firsts), key=firsts.count)
     changed = float(np.mean([f != majority for f in firsts]))
+    # kendalltau compares two score vectors over the same items, so each ordering
+    # (word positions, best first) becomes the rank of every position
+    ranks = [np.argsort(r) for r in rankings]
     taus = []
     for i, j in pairs:
-        t = kendalltau(rankings[i], rankings[j]).statistic
+        t = kendalltau(ranks[i], ranks[j]).statistic
         if np.isfinite(t):
             taus.append(t)
     return {"jaccard": jac, "top1_changed": changed,
