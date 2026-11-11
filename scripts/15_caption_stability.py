@@ -46,6 +46,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
+from tebol.captions_io import iter_raw  # noqa: E402
+
 CAPTIONS = ROOT / "artifacts" / "captions"
 TERMS = ROOT / "data" / "manifest" / "class_terms.csv"
 OUT_CSV = ROOT / "results" / "metrics" / "caption_stability.csv"
@@ -87,11 +89,9 @@ def pairwise(sets: list[set]) -> float:
 def run_pair(pair: str, limit: int, terms: dict[str, set[str]]) -> list[dict]:
     """One row per (pair, length), aggregated over that length's images."""
     caps: dict[tuple[str, int], dict[int, dict]] = defaultdict(dict)
-    with (CAPTIONS / pair / MODEL).open(encoding="utf-8") as fh:
-        for line in fh:
-            r = json.loads(line)
-            if r.get("tokens"):
-                caps[(r["stem"], r["n_words"])][r["rep"]] = r
+    for r in iter_raw(CAPTIONS / pair / MODEL):      # .jsonl or .jsonl.gz
+        if r.get("tokens"):
+            caps[(r["stem"], r["n_words"])][r["rep"]] = r
 
     by_len: dict[int, list[dict]] = defaultdict(list)
     seen: dict[int, set] = defaultdict(set)

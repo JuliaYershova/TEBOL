@@ -106,12 +106,12 @@ def section_length(s) -> list[str]:
 
 
 def section_aopc(a) -> list[str]:
-    d = a[a.ranking.isin(["smer_subsample", "lime_bow"]) & (a.arm == "caption")]
+    d = a[a.ranking.isin(["smer_subsample", "lime"]) & (a.arm == "caption")]
     mx = d.groupby(["pair", "setup", "ranking"])["k"].transform("max")
     e = d[d.k == mx].pivot_table(index=["pair", "setup"], columns="ranking",
                                  values="mean").reset_index()
-    e["gap"] = e["smer_subsample"] - e["lime_bow"]
-    L = ["## 4. SMER's advantage over LIME grows with caption length", "",
+    e["gap"] = e["smer_subsample"] - e["lime"]
+    L = ["## 4. SMER and LIME are equally faithful at every caption length", "",
          "AOPC gap (SMER − LIME) at the deepest k each length allows.", "",
          "| pair | " + " | ".join(f"{n}w" for n in LENGTHS) + " |",
          "|---|" + "---:|" * len(LENGTHS)]
@@ -124,56 +124,81 @@ def section_aopc(a) -> list[str]:
     means = [e[e.setup == w]["gap"].mean() for w in SETUPS]
     L.append("| **mean** | " + " | ".join(f"**{m:.3f}**" for m in means) + " |")
     L += ["",
-          "A 7-word caption has 2⁷ = 128 possible word-subsets, so LIME's 5000 "
-          "perturbations cover the whole space 39 times over — it is not "
-          "approximating, and matches SMER exactly. A 34-word caption has "
-          "2³⁴ ≈ 1.7×10¹⁰ subsets and 5000 samples is a vanishing fraction. "
-          "**SMER's cost stays one dot product while LIME's sample requirement "
-          "grows exponentially**, which is the advantage that holds regardless "
-          "of how LIME is configured.", ""]
+          f"The mean gap is at most {max(means):.3f} at every length. The "
+          "classifier is linear over a mean of word vectors, so the function "
+          "LIME samples is additive and its linear surrogate recovers it from "
+          "5000 perturbations even when a caption has far more subsets than "
+          "that (a 7-word caption has 2⁷ = 128, a 34-word caption 2³⁴). "
+          "**SMER's curve is not steeper than LIME's.** What SMER adds is that "
+          "the score is exact, involves no sampling, and costs one dot product "
+          "instead of thousands of model evaluations; section 7 measures the "
+          "determinism.", ""]
     return L
 
 
+FILLER = {"a", "an", "the", "and", "or", "but", "of", "in", "on", "at", "to",
+          "for", "with", "from", "by", "as", "is", "are", "was", "were", "be",
+          "its", "it", "this", "that", "there", "here", "over", "under", "near",
+          "into", "onto", "up", "down", "out", "off", "against", "while",
+          "during", "above", "below", "between", "through", "across"}
+
+
 def section_words(setup, topn) -> list[str]:
-    L = ["## 5. SMER's word lists are cleaner than LIME's", "",
+    L = ["## 5. Word lists: SMER and LIME on the same captions", "",
          f"Top {topn} words per class, class name removed, at {setup}. "
-         "Corpus ranking over words appearing in ≥20 captions.", "",
+         "Corpus ranking over words appearing in ≥20 captions, both methods "
+         "on the captions LIME was run on (a fixed sample per configuration).", "",
          "| pair | class | SMER | LIME |", "|---|---|---|---|"]
     arm = "caption_noclass"
     emb = arms_mod.ARMS[arm].embedding
+    filler, filler20 = {"z": 0, "lime": 0}, {"z": 0, "lime": 0}
+    slots = slots20 = 0
     for p in PAIRS:
         base = ROOT / "artifacts" / "explanations" / emb / p / arm / setup
-        sp, lp = base / "smer_words.parquet", base / "lime_words__bow.parquet"
+        sp, lp = base / "smer_words.parquet", base / "lime_words.parquet"
         if not sp.exists() or not lp.exists():
             continue
         pos = sorted(p.split("_"))[1]
         for path, col in ((sp, "z"), (lp, "lime")):
             pass
         out = {}
+        keys = pd.read_parquet(lp, columns=["stem", "rep"]).drop_duplicates()
         for path, col in ((sp, "z"), (lp, "lime")):
             df = pd.read_parquet(path)
+            if col == "z":
+                df = df.merge(keys, on=["stem", "rep"])
             df = df.assign(dir=np.where(df["pred_class"] == pos, "pos", "neg"))
             g = df.groupby(["dir", "word"])[col].agg(["mean", "size"]).reset_index()
             g = g[g["size"] >= 20]
             out[col] = {d: list(g[g.dir == d].sort_values(
-                "mean", ascending=(d == "neg"))["word"].head(topn))
+                "mean", ascending=(d == "neg"))["word"].head(20))
                 for d in ("pos", "neg")}
         for d, cls in (("pos", sorted(p.split("_"))[1]),
                        ("neg", sorted(p.split("_"))[0])):
             L.append(f"| {SHORT[p] if d == 'pos' else ''} | {cls} "
-                     f"| {', '.join(out['z'][d])} | {', '.join(out['lime'][d])} |")
+                     f"| {', '.join(out['z'][d][:topn])} | "
+                     f"{', '.join(out['lime'][d][:topn])} |")
+        for col in ("z", "lime"):
+            for d in ("pos", "neg"):
+                filler[col] += sum(w in FILLER for w in out[col][d][:topn])
+                filler20[col] += sum(w in FILLER for w in out[col][d])
+        slots += 2 * topn
+        slots20 += 40
     L += ["",
-          "SMER returns object and scene nouns. LIME's corpus lists are "
-          "contaminated by high-frequency filler — `and`, `with`, `on` reach "
-          "its top ranks, while **no stopword reaches SMER's top 20 in any "
-          "pair**. This is the corpus-level aggregate; per caption the two "
-          "agree closely.", ""]
+          f"Function words among the top {topn}: SMER {filler['z']} of "
+          f"{slots}, LIME {filler['lime']} of {slots}. Among the top 20: SMER "
+          f"{filler20['z']} of {slots20}, LIME {filler20['lime']} of {slots20}. "
+          "Both methods are ranked on the same captions, so the difference is "
+          "not one of sample size. A word that occurs in few captions can top "
+          "a corpus mean on noise alone, which affects both methods; ranking "
+          "SMER over its full corpus instead of LIME's sample is not a "
+          "comparison of the two methods.", ""]
     return L
 
 
 def section_caption_stability() -> list[str]:
     """Stage-1 repeatability. Measured on the raw captions, no model involved."""
-    path = M.parent / "caption_stability.csv"
+    path = M / "caption_stability.csv"
     if not path.exists():
         return []
     d = pd.read_csv(path)
@@ -295,15 +320,15 @@ def main() -> None:
         "",
         "## Summary",
         "",
-        "1. **Most of the reported accuracy is leakage.** 85% of captions name "
-        "their own class; removing it costs up to 0.245 accuracy.",
+        "1. **Most of the reported accuracy is leakage.** Most captions name "
+        "their own class; the cost of removing it, per pair, is in section 1.",
         "2. **Descriptions do not beat human tags** when both are leaky — they "
         "land within a point of each other.",
         "3. **Optimal caption length is opposite for the two arms**: short when "
         "the class name is present, long when it is not.",
-        "4. **SMER beats LIME by more the longer the caption**, from 0.006 at "
-        "3 words to 0.346 at 30, for a reason that is structural rather than "
-        "empirical.",
+        "4. **SMER and LIME are equally faithful at every length** (AOPC gap "
+        "at most 0.002). SMER's advantage is that it is exact, deterministic "
+        "and cheap, not a steeper curve.",
         "5. **The captioner is the dominant source of instability.** Two "
         "repetitions of one image share under half their words at 30 words, "
         "and that moves the explanation more than refitting the model does.",

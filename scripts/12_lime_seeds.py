@@ -61,7 +61,7 @@ SEEDS = [BASE_SEED + i for i in range(5)]
 
 
 def lime_rank(words, z, bias, toward_pos, seed, num_samples):
-    w = explain_one(words, z, bias, toward_pos, num_samples, seed, False, True)
+    w = explain_one(words, z, bias, toward_pos, num_samples, seed, False, False)
     return np.argsort(-w, kind="stable")
 
 
@@ -71,7 +71,7 @@ def run_pair(pair: str, arm: str, setup: int, topk: int, n: int,
     name = f"w{setup:02d}" if setup else "tags"
     coefs = ROOT / "artifacts" / "models" / emb / pair / arm / name / "coefs.npz"
     words_path = (ROOT / "artifacts" / "explanations" / emb / pair / arm / name
-                  / "lime_words__bow.parquet")
+                  / "lime_words.parquet")
     if not coefs.exists() or not words_path.exists():
         return []
 
@@ -134,6 +134,26 @@ def run_pair(pair: str, arm: str, setup: int, topk: int, n: int,
     return out
 
 
+
+def merge_into(df, path, keys, enabled=True):
+    """Replace rows matching this run's keys, keep every other row.
+
+    Each run covers one setup, and the paper reports one setup in the body and
+    others in an appendix, so results have to accumulate across runs rather
+    than the last run winning.
+    """
+    if not enabled or not path.exists():
+        return df
+    old = pd.read_csv(path)
+    keys = [k for k in keys if k in df.columns and k in old.columns]
+    if not keys:
+        return df
+    done = set(map(tuple, df[keys].astype(str).itertuples(index=False)))
+    mask = [tuple(t) not in done
+            for t in old[keys].astype(str).itertuples(index=False)]
+    return pd.concat([old[mask], df], ignore_index=True).sort_values(keys)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -145,6 +165,8 @@ def main() -> None:
     ap.add_argument("--n", type=int, default=N_CAPTIONS)
     ap.add_argument("--num-samples", type=int, default=NUM_SAMPLES)
     ap.add_argument("--jobs", type=int, default=-1)
+    ap.add_argument("--merge", action="store_true",
+                    help="merge into the existing CSV instead of replacing it, so results for several setups accumulate in one file")
     args = ap.parse_args()
 
     rows = []
@@ -158,7 +180,8 @@ def main() -> None:
             "n_captions", "jaccard", "top1_changed", "tau"]
     df = df[cols]
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    df.to_csv(OUT_DIR / "stochasticity_lime.csv", index=False)
+    df.pipe(merge_into, OUT_DIR / "stochasticity_lime.csv", ['pair', 'arm', 'setup', 'method', 'source'], args.merge) \
+        .to_csv(OUT_DIR / "stochasticity_lime.csv", index=False)
     print(f"\nwrote {OUT_DIR / 'stochasticity_lime.csv'} ({len(df)} rows)")
 
     print(f"\n{'pair':<24}{'arm':<18}{'method':<7}{'source':<8}"

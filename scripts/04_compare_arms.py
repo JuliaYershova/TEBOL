@@ -41,6 +41,7 @@ import argparse
 import sys
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -71,12 +72,13 @@ def paired(a: pd.DataFrame, b: pd.DataFrame, metric: str) -> dict | None:
         return None
 
     d = (m[f"{metric}_a"] - m[f"{metric}_b"]).to_numpy()
-    t, p_t = stats.nadeau_bengio(d, int(m["n_train"].mean()), int(m["n_test"].mean()))
+    t, p_t, h = stats.nadeau_bengio(d, int(m["n_train"].mean()),
+                                    int(m["n_test"].mean()))
     w, p_w = stats.wilcoxon(d)
-    ci = stats.summarize(d)
+    delta = float(d[np.isfinite(d)].mean())
     return {"metric": metric, "k": len(m), "mean_a": float(m[f"{metric}_a"].mean()),
-            "mean_b": float(m[f"{metric}_b"].mean()), "delta": ci["mean"],
-            "delta_ci_lo": ci["ci_lo"], "delta_ci_hi": ci["ci_hi"],
+            "mean_b": float(m[f"{metric}_b"].mean()), "delta": delta,
+            "delta_ci_lo": delta - h, "delta_ci_hi": delta + h,
             "t_nb": t, "p_nb": p_t, "w": w, "p_wilcoxon": p_w}
 
 

@@ -134,9 +134,9 @@ def main() -> None:
         "asked. So `cap - tags` compares a leaky caption to a leaky tag set, "
         "and `nosyn - tags` compares a clean caption to a leaky tag set. "
         "Neither is a like-for-like contest; both are worth reporting.",
-        "- The synonym removal strips only a caption's *own* class terms, so "
-        "cross-class mentions survive and become inverted indicators. "
-        "See `class_leakage.md`.",
+        "- The synonym removal strips the terms of both classes of a pair "
+        "from every caption, without using the image's label, so no class "
+        "name survives as an indicator. See `03_class_leakage.md`.",
         "",
     ]
 

@@ -130,7 +130,11 @@ CLIP_MODELS = {
     "coca": ("coca_ViT-B-32", "laion2b_s13b_b90k", "coca_ViT-B-32.bin"),
 }
 WEIGHTS = ROOT / "artifacts" / "openclip_weights"
-PROBES = {"clip_probe": "clip", "coca_probe": "coca"}
+PROBES = {"clip_probe": "clip", "coca_probe": "coca", "vgg16_probe": "vgg16"}
+#: torchvision's ImageNet VGG16, the conv stack average-pooled to 512 numbers --
+#: the same representation as the original notebook's Keras
+#: VGG16(include_top=False, pooling="avg"), with torchvision's weights.
+VGG16_CKPT = Path.home() / ".cache" / "torch" / "hub" / "checkpoints" / "vgg16-397923af.pth"
 EMB = ROOT / "artifacts" / "probe_embeddings"
 TEMPLATE = "a photo of {article} {}."
 
@@ -457,15 +461,32 @@ def run_strmatch(args) -> None:
     print(f"wrote {path}")
 
 
+def load_vgg16(dev: str):
+    """(feature extractor, image transform) for the VGG16 probe."""
+    import torch
+    from torchvision import models, transforms
+
+    m = models.vgg16(weights=None)
+    m.load_state_dict(torch.load(VGG16_CKPT, map_location="cpu"))
+    feat = torch.nn.Sequential(m.features, torch.nn.AdaptiveAvgPool2d(1),
+                               torch.nn.Flatten())
+    pp = transforms.Compose([
+        transforms.Resize((224, 224)), transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])])
+    return feat.eval().to(dev), pp
+
+
 def run_probe(args) -> None:
     """Frozen image vectors, then the stage-3 classifier on the stage-3 folds."""
     import torch
-    import open_clip
     from PIL import Image
     from sklearn.linear_model import LogisticRegression
 
     base = PROBES[args.baseline]
-    arch, tag, fname = CLIP_MODELS[base]
+    if base == "vgg16":
+        arch, tag = "vgg16", "torchvision-IMAGENET1K_V1"
+    else:
+        arch, tag, fname = CLIP_MODELS[base]
     dev = ("mps" if torch.backends.mps.is_available()
            else "cuda" if torch.cuda.is_available() else "cpu")
 
@@ -486,15 +507,20 @@ def run_probe(args) -> None:
         print(f"loaded {X.shape} from {cache}")
     else:
         print(f"embedding {len(items)} images with {arch} on {dev}", flush=True)
-        model, preprocess = load_clip(arch, tag, WEIGHTS / fname, dev)
-        model.eval().to(dev)
+        if base == "vgg16":
+            model, preprocess = load_vgg16(dev)
+            encode = model
+        else:
+            model, preprocess = load_clip(arch, tag, WEIGHTS / fname, dev)
+            model.eval().to(dev)
+            encode = model.encode_image
         out, t0 = [], time.perf_counter()
         for i in range(0, len(items), args.batch):
             chunk = items[i:i + args.batch]
             b = torch.stack([preprocess(Image.open(f).convert("RGB"))
                              for _, f, _ in chunk]).to(dev)
             with torch.no_grad():
-                out.append(model.encode_image(b).float().cpu().numpy())
+                out.append(encode(b).float().cpu().numpy())
             done = min(i + args.batch, len(items))
             if done % (args.batch * 20) == 0 or done == len(items):
                 print(f"  [{done}/{len(items)}]", flush=True)
@@ -543,14 +569,14 @@ def table(args) -> None:
     the full arm is the pipeline as it runs, the ablated arm is the pipeline
     with the captioner's own recognition taken out of the input.
 
-    Differences are paired by (repeat, fold) and tested with a t-test on the
-    25 paired differences, so a lead of half a point is not read as a win when
+    Differences are paired by (repeat, fold) and tested with the Nadeau-Bengio
+    corrected t-test on the 25 paired differences, p-value and interval alike, so a lead of half a point is not read as a win when
     the folds disagree about it.
     """
-    from scipy import stats
+    from tebol import stats
 
     pairs = args.pairs or sorted(p.name for p in OUT.iterdir() if p.is_dir())
-    arms = ["caption", "caption_noclass"]
+    arms = args.arms
     lr = pd.read_csv(MET / "folds.csv")
     lr = lr[(lr.level == "image") & lr.arm.isin(arms) & (lr.setup == args.setup)]
 
@@ -621,9 +647,10 @@ def table(args) -> None:
                 keys = [k for k in b if k in g.index]
                 l = np.array([g.loc[k] for k in keys])
                 d = l - np.array([b[k] for k in keys])
-                se = d.std(ddof=1) / np.sqrt(d.size)
-                h = se * stats.t.ppf(0.975, d.size - 1)
-                _, pv = stats.ttest_rel(l, np.array([b[k] for k in keys]))
+                nt = lr[(lr.pair == pair) & (lr.arm == arm)] \
+                    .set_index(["repeat", "fold"])[["n_train", "n_test"]]
+                _, pv, h = stats.nadeau_bengio(
+                    d, int(nt.n_train.mean()), int(nt.n_test.mean()))
                 rec |= {f"{arm}_acc": l.mean(), f"{arm}_diff": d.mean(),
                         f"{arm}_lo": d.mean() - h, f"{arm}_hi": d.mean() + h,
                         f"{arm}_p": pv}
@@ -638,12 +665,14 @@ def table(args) -> None:
     # the method, its own ablation, then the baselines from cheapest to
     # most capable: no model, zero-shot, then the same classifier on frozen
     # image vectors. Fixed order so the table reads the same every run.
-    ORDER = ["caption", "caption_noclass", "strmatch", "zeroshot",
-             "clip", "clip_probe", "coca", "coca_probe"]
-    have = set(args.baselines) | {"caption", "caption_noclass"}
+    ORDER = ["caption", "caption_noclass", "gpt4o", "strmatch", "zeroshot",
+             "clip", "clip_probe", "coca", "coca_probe", "vgg16_probe"]
+    have = set(args.baselines) | set(arms)
     cols = [c for c in ORDER if c in have]
     head = {"caption": "LR caption", "caption_noclass": "LR no-class",
+            "gpt4o": "LR GPT-4o",
             "clip_probe": "CLIP probe", "coca_probe": "CoCa probe",
+            "vgg16_probe": "VGG16 probe",
             "strmatch": "name in text"}
 
     # one row per pair, one column per method, each with its 95% half-width
@@ -710,7 +739,7 @@ def main() -> None:
         s = sub.add_parser(name)
         s.add_argument("--baseline", default="zeroshot",
                        choices=["zeroshot", "clip", "coca",
-                                "clip_probe", "coca_probe",
+                                "clip_probe", "coca_probe", "vgg16_probe",
                                 "strmatch"])
 
     r = sub.choices["run"]
@@ -735,7 +764,13 @@ def main() -> None:
 
     t = sub.choices["table"]
     t.add_argument("--pairs", nargs="*", default=None)
-    t.add_argument("--baselines", nargs="*", default=["clip", "coca", "zeroshot"])
+    # every baseline that has been run, so a bare `table` cannot silently drop
+    # the probes and string matching from baselines_<setup>.csv
+    t.add_argument("--baselines", nargs="*",
+                   default=["zeroshot", "clip", "coca", "clip_probe",
+                            "coca_probe", "strmatch"])
+    t.add_argument("--arms", nargs="*", default=["caption", "caption_noclass"],
+                   help="the stage-3 arms to put beside the baselines")
     t.add_argument("--boot", type=int, default=5000,
                    help="bootstrap resamples for the baseline interval")
     t.add_argument("--boot-seed", type=int, default=0)

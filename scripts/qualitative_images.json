@@ -1,0 +1,14 @@
+{
+  "lime": {
+    "LIME_ambulance": {"pair": "ambulance_firetruck", "stem": "n02701002_46"},
+    "LIME_fire_truck": {"pair": "ambulance_firetruck", "stem": "n03345487_317"},
+    "LIME_ant": {"pair": "ant_bee", "stem": "n02219486_1677"},
+    "LIME_bee": {"pair": "ant_bee", "stem": "n02206856_38"},
+    "LIME_quitar": {"pair": "acousticguitar_violin", "stem": "n02676566_367"},
+    "LIME_violin": {"pair": "acousticguitar_violin", "stem": "n04536866_458"},
+    "LIME_hotpot": {"pair": "hotpot_vase", "stem": "n07590611_3587"},
+    "LIME_vase": {"pair": "hotpot_vase", "stem": "n04522168_2044"},
+    "LIME_cucumber": {"pair": "cucumber_zucchini", "stem": "n07718472_1428"},
+    "LIME_zucchini": {"pair": "cucumber_zucchini", "stem": "n07716358_2017"}
+  }
+}

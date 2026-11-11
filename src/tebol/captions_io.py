@@ -49,6 +49,8 @@ def iter_raw(path: str | Path):
     run appends to it; the committed snapshot is gzipped, at ~17x smaller.
     """
     path = Path(path)
+    if not path.exists() and path.with_name(path.name + ".gz").exists():
+        path = path.with_name(path.name + ".gz")
     if path.suffix == ".gz":
         import gzip
         opener = lambda: gzip.open(path, "rt", encoding="utf-8")  # noqa: E731

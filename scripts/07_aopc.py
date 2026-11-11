@@ -80,6 +80,9 @@ OUT_DIR = ROOT / "results" / "metrics"
 #: Tags have no requested length, so theirs comes from the median tag count.
 MAX_K_CEILING = 15
 
+#: removals every five-word arm and the tag arm have in common (n - 1 for n = 5)
+COMMON_K = 4
+
 #: LIME ranking name -> the file holding those weights. Each is a different
 #: configuration of the same explainer, all scored on the same captions, so the
 #: curves are directly comparable:
@@ -224,11 +227,12 @@ def curves(df: pd.DataFrame, pos_label: str, max_k: int, ranking: str,
             if not toward_pos:
                 p_k = 1.0 - p_k
             rows.append((int(fold_all[a]), int(rep_all[a]), k,
-                         p_full - p_k, float(active)))
+                         p_full - p_k, float(active), p_full))
 
-    out = pd.DataFrame(rows, columns=["fold", "rep", "k", "drop", "active"])
+    out = pd.DataFrame(rows, columns=["fold", "rep", "k", "drop", "active",
+                                      "p_full"])
     return out.groupby(["fold", "rep", "k"], as_index=False)[
-        ["drop", "active"]].mean()
+        ["drop", "active", "p_full"]].mean()
 
 
 def run(pair: str, arm: str, setup: int, max_k: int, ranking: str,
@@ -319,7 +323,10 @@ def run(pair: str, arm: str, setup: int, max_k: int, ranking: str,
                      "mean": s["mean"], "sd": s["sd"],
                      "ci_lo": s["ci_lo"], "ci_hi": s["ci_hi"],
                      "n_groups": s["k"],
-                     "frac_active": float(g["active"].mean())})
+                     "frac_active": float(g["active"].mean()),
+                     # mean probability of the predicted class before anything
+                     # is removed: the most any curve can fall
+                     "baseline": float(g["p_full"].mean())})
     return rows
 
 
@@ -368,6 +375,26 @@ def main() -> None:
     df = pd.DataFrame(rows)
     df.to_csv(OUT_DIR / "aopc.csv", index=False)
     print(f"\nwrote {OUT_DIR / 'aopc.csv'} ({len(df)} rows)")
+    # the AOPC score of the paper: the mean curve integrated by the trapezoidal
+    # rule. A curve cannot fall further than the probability it starts from, so
+    # the score is also given per unit of that baseline; and over the first
+    # COMMON_K removals only, the range every five-word arm and the tag arm
+    # share (a tag list allows more removals than a five-word description).
+    def _score(g):
+        g = g.sort_values("k")
+        c = g[g["k"] <= COMMON_K]
+        return pd.Series({
+            "aopc_score": float(np.trapezoid(g["mean"], g["k"])),
+            "baseline_confidence": float(g["baseline"].mean()),
+            "aopc_score_common_k": float(np.trapezoid(c["mean"], c["k"])),
+        })
+    score = (df.groupby(["pair", "arm", "setup", "ranking"])
+               .apply(_score, include_groups=False).reset_index())
+    score["aopc_per_confidence"] = score["aopc_score"] / score["baseline_confidence"]
+    score["aopc_common_k_per_confidence"] = (
+        score["aopc_score_common_k"] / score["baseline_confidence"])
+    score.to_csv(OUT_DIR / "aopc_scores.csv", index=False)
+    print(f"wrote {OUT_DIR / 'aopc_scores.csv'} ({len(score)} rows)")
     write_report(df, args)
 
 

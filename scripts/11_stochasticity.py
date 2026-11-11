@@ -147,7 +147,11 @@ def caption_stability(pair: str, arm: str, setup: int, topk: int,
         tops = []
         for _, cap in g.groupby("rep", sort=True):
             toward = 1.0 if str(cap["pred_class"].iloc[0]) == pos_label else -1.0
-            s = cap.assign(v=cap["z"] * toward).nlargest(topk, "v")
+            # one row per distinct word, so a repeated word cannot fill two of
+            # the topk slots and leave the set short
+            s = (cap.assign(v=cap["z"] * toward)
+                    .sort_values("v", ascending=False, kind="stable")
+                    .drop_duplicates("word").head(topk))
             tops.append(set(s["word"]))
         if len(tops) < 2:
             continue
@@ -179,6 +183,26 @@ def prediction_stability(pair: str, arm: str, setup: int) -> dict | None:
             "n_images": int(g.ngroups)}
 
 
+
+def merge_into(df, path, keys, enabled=True):
+    """Replace rows matching this run's keys, keep every other row.
+
+    Each run covers one setup, and the paper reports one setup in the body and
+    others in an appendix, so results have to accumulate across runs rather
+    than the last run winning.
+    """
+    if not enabled or not path.exists():
+        return df
+    old = pd.read_csv(path)
+    keys = [k for k in keys if k in df.columns and k in old.columns]
+    if not keys:
+        return df
+    done = set(map(tuple, df[keys].astype(str).itertuples(index=False)))
+    mask = [tuple(t) not in done
+            for t in old[keys].astype(str).itertuples(index=False)]
+    return pd.concat([old[mask], df], ignore_index=True).sort_values(keys)
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
@@ -187,6 +211,8 @@ def main() -> None:
     ap.add_argument("--setup", type=int, default=7)
     ap.add_argument("--topk", type=int, default=TOPK)
     ap.add_argument("--limit", type=int, default=MAX_CAPTIONS)
+    ap.add_argument("--merge", action="store_true",
+                    help="merge into the existing CSV instead of replacing it, so results for several setups accumulate in one file")
     args = ap.parse_args()
 
     pairs = args.pair or list(PAIRS)
@@ -209,8 +235,10 @@ def main() -> None:
             "jaccard", "top1_changed", "tau"]
     df = df[[c for c in cols if c in df.columns]]
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    df.to_csv(OUT_DIR / "stochasticity.csv", index=False)
-    pd.DataFrame(preds).to_csv(OUT_DIR / "prediction_stability.csv", index=False)
+    df.pipe(merge_into, OUT_DIR / "stochasticity.csv", ['pair', 'arm', 'setup', 'source'], args.merge) \
+        .to_csv(OUT_DIR / "stochasticity.csv", index=False)
+    pd.DataFrame(preds).pipe(merge_into, OUT_DIR / "prediction_stability.csv", ['pair', 'arm', 'setup', 'source'], args.merge) \
+        .to_csv(OUT_DIR / "prediction_stability.csv", index=False)
 
     print(f"\nSMER top-{args.topk} stability (w{args.setup:02d})")
     print(f"  {'pair':<24}{'arm':<18}{'source':<11}{'Jaccard':>9}"

@@ -121,22 +121,45 @@ def main() -> None:
         pair = path.parent.name
         agg: dict[str, Counter] = defaultdict(Counter)
         ablated = []
-        for r in load_rows(path):
+        pair_rows = list(load_rows(path))
+        pair_classes = {r["class"] for r in pair_rows}
+        for r in pair_rows:
             toks = r.get("tokens") or []
             cls = r["class"]
-            hit = find(toks, cls, single, phrase)
+            # What the caption names is measured against the true class; what
+            # is removed must not depend on it, because a test image's class is
+            # unknown. Strip the names of every class in the pair from every
+            # caption, otherwise the surviving opposite-class name is a perfect
+            # inverted indicator.
+            named = find(toks, cls, single, phrase)
+            other = {i for c in pair_classes - {cls}
+                     for i in find(toks, c, single, phrase)}
+            hit = sorted(set(named) | other)
             kept = [t for i, t in enumerate(toks) if i not in set(hit)]
+            # deleting a word can join its neighbours into a term
+            # ("emergency ambulance vehicle" -> "emergency vehicle"), so repeat
+            # until nothing matches; `hit` stays in original token positions
+            pos = [i for i in range(len(toks)) if i not in set(hit)]
+            while True:
+                again = {j for c in pair_classes
+                         for j in find(kept, c, single, phrase)}
+                if not again:
+                    break
+                hit = sorted(set(hit) | {pos[j] for j in again})
+                pos = [p for k, p in enumerate(pos) if k not in again]
+                kept = [t for k, t in enumerate(kept) if k not in again]
 
             a = agg[cls]
             a["captions"] += 1
-            a["with_class"] += bool(hit)
+            a["with_class"] += bool(named)
+            a["with_other_class"] += bool(other)
             a["tokens"] += len(toks)
             a["class_tokens"] += len(hit)
             a["kept"] += len(kept)
             a["empty_after"] += not kept
             s = per_setup[r["n_words"]]
             s["captions"] += 1
-            s["with_class"] += bool(hit)
+            s["with_class"] += bool(named)
             s["tokens"] += len(toks)
             s["kept"] += len(kept)
             s["empty_after"] += not kept
@@ -149,6 +172,7 @@ def main() -> None:
             rows.append({
                 "pair": pair, "class": cls,
                 "captions": a["captions"], "with_class": a["with_class"],
+                "with_other_class": a["with_other_class"],
                 "pct_with_class": round(100 * a["with_class"] / a["captions"], 1),
                 "tokens": a["tokens"], "class_tokens": a["class_tokens"],
                 "pct_tokens_removed": round(100 * a["class_tokens"] / a["tokens"], 1),
@@ -169,7 +193,7 @@ def main() -> None:
         w.writerows(rows)
 
     tot = {k: sum(r[k] for r in rows) for k in
-           ("captions", "with_class", "tokens", "class_tokens", "empty_after")}
+           ("captions", "with_class", "with_other_class", "tokens", "class_tokens", "empty_after")}
     md = write_md(rows, per_setup, tot, term_rows, args.max_tier)
     print("\n".join(md))
     print(f"\nwrote {OUT_CSV.relative_to(ROOT)} and {OUT_MD.relative_to(ROOT)}")
