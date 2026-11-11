@@ -1,0 +1,61 @@
+pair,arm,setup,ranking,k,mean,source
+acousticguitar_violin,caption,w07,lime,1,0.13295654753811897,aopc_values.csv
+acousticguitar_violin,caption,w07,lime,2,0.28826989026932165,aopc_values.csv
+acousticguitar_violin,caption,w07,lime,3,0.2868577296316155,aopc_values.csv
+acousticguitar_violin,caption,w07,lime,4,0.2868577296316155,aopc_values.csv
+acousticguitar_violin,caption,w07,lime,5,0.2868577296316155,aopc_values.csv
+acousticguitar_violin,caption,w07,lime,6,0.2868577296316155,aopc_values.csv
+acousticguitar_violin,caption,w07,smer,1,0.13761134266690536,aopc_values.csv
+acousticguitar_violin,caption,w07,smer,2,0.31678629790228213,aopc_values.csv
+acousticguitar_violin,caption,w07,smer,3,0.3173858141185837,aopc_values.csv
+acousticguitar_violin,caption,w07,smer,4,0.3173858141185837,aopc_values.csv
+acousticguitar_violin,caption,w07,smer,5,0.3173858141185837,aopc_values.csv
+acousticguitar_violin,caption,w07,smer,6,0.3173858141185837,aopc_values.csv
+ambulance_firetruck,caption,w07,lime,1,0.1482,digitised from published PNG
+ambulance_firetruck,caption,w07,lime,2,0.15,digitised from published PNG
+ambulance_firetruck,caption,w07,lime,3,0.15,digitised from published PNG
+ambulance_firetruck,caption,w07,lime,4,0.15,digitised from published PNG
+ambulance_firetruck,caption,w07,lime,5,0.15,digitised from published PNG
+ambulance_firetruck,caption,w07,lime,6,0.15,digitised from published PNG
+ambulance_firetruck,caption,w07,smer,1,0.155,digitised from published PNG
+ambulance_firetruck,caption,w07,smer,2,0.1548,digitised from published PNG
+ambulance_firetruck,caption,w07,smer,3,0.1552,digitised from published PNG
+ambulance_firetruck,caption,w07,smer,4,0.1552,digitised from published PNG
+ambulance_firetruck,caption,w07,smer,5,0.1552,digitised from published PNG
+ambulance_firetruck,caption,w07,smer,6,0.1552,digitised from published PNG
+ant_bee,caption,w07,lime,1,0.093,digitised from published PNG
+ant_bee,caption,w07,lime,2,0.0925,digitised from published PNG
+ant_bee,caption,w07,lime,3,0.0925,digitised from published PNG
+ant_bee,caption,w07,lime,4,0.0925,digitised from published PNG
+ant_bee,caption,w07,lime,5,0.0925,digitised from published PNG
+ant_bee,caption,w07,lime,6,0.0925,digitised from published PNG
+ant_bee,caption,w07,smer,1,0.0909,digitised from published PNG
+ant_bee,caption,w07,smer,2,0.0915,digitised from published PNG
+ant_bee,caption,w07,smer,3,0.0915,digitised from published PNG
+ant_bee,caption,w07,smer,4,0.0915,digitised from published PNG
+ant_bee,caption,w07,smer,5,0.0915,digitised from published PNG
+ant_bee,caption,w07,smer,6,0.0916,digitised from published PNG
+cucumber_zucchini,caption,w07,lime,1,0.3375,aopc_values.csv
+cucumber_zucchini,caption,w07,lime,2,0.3261,aopc_values.csv
+cucumber_zucchini,caption,w07,lime,3,0.3211,aopc_values.csv
+cucumber_zucchini,caption,w07,lime,4,0.3176,aopc_values.csv
+cucumber_zucchini,caption,w07,lime,5,0.3176,aopc_values.csv
+cucumber_zucchini,caption,w07,lime,6,0.3176,aopc_values.csv
+cucumber_zucchini,caption,w07,smer,1,0.3384,aopc_values.csv
+cucumber_zucchini,caption,w07,smer,2,0.3274,aopc_values.csv
+cucumber_zucchini,caption,w07,smer,3,0.3211,aopc_values.csv
+cucumber_zucchini,caption,w07,smer,4,0.317,aopc_values.csv
+cucumber_zucchini,caption,w07,smer,5,0.317,aopc_values.csv
+cucumber_zucchini,caption,w07,smer,6,0.317,aopc_values.csv
+hotpot_vase,caption,w07,lime,1,0.0089,aopc_values.csv
+hotpot_vase,caption,w07,lime,2,0.0165,aopc_values.csv
+hotpot_vase,caption,w07,lime,3,0.0169,aopc_values.csv
+hotpot_vase,caption,w07,lime,4,0.0164,aopc_values.csv
+hotpot_vase,caption,w07,lime,5,0.0164,aopc_values.csv
+hotpot_vase,caption,w07,lime,6,0.0164,aopc_values.csv
+hotpot_vase,caption,w07,smer,1,0.0149,aopc_values.csv
+hotpot_vase,caption,w07,smer,2,0.0225,aopc_values.csv
+hotpot_vase,caption,w07,smer,3,0.0223,aopc_values.csv
+hotpot_vase,caption,w07,smer,4,0.0238,aopc_values.csv
+hotpot_vase,caption,w07,smer,5,0.0238,aopc_values.csv
+hotpot_vase,caption,w07,smer,6,0.0238,aopc_values.csv

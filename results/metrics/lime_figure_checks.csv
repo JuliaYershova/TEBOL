@@ -1,0 +1,11 @@
+figure,stem,predicted,prob,superpixels,seed_spearman,seed_top3_jaccard,box_area_share,positive_weight_inside_box,top_superpixel_centroid_in_box,top_superpixel_overlap_with_box,deletion_drop_top3,deletion_drop_random3
+LIME_ambulance,n02701002_46,ambulance,1.0,47,0.84,1.0,0.48,0.86,True,1.0,0.015,0.0
+LIME_fire_truck,n03345487_317,firetruck,0.998,29,0.9,1.0,,,,,0.405,-0.001
+LIME_ant,n02219486_1677,ant,0.973,37,0.88,0.35,0.02,0.0,False,0.0,-0.002,0.07
+LIME_bee,n02206856_38,bee,0.998,44,0.84,1.0,,,,,0.072,0.009
+LIME_quitar,n02676566_367,acousticguitar,1.0,48,0.87,0.75,,,,,0.001,0.001
+LIME_violin,n04536866_458,violin,1.0,38,0.74,0.5,,,,,0.001,0.001
+LIME_hotpot,n07590611_3587,hotpot,1.0,36,0.73,0.5,0.33,0.63,True,1.0,0.013,0.012
+LIME_vase,n04522168_2044,vase,1.0,24,0.86,0.2,,,,,0.0,-0.0
+LIME_cucumber,n07718472_1428,cucumber,0.756,34,0.83,0.35,,,,,0.696,-0.03
+LIME_zucchini,n07716358_2017,zucchini,0.735,34,0.88,0.5,0.34,0.18,False,0.03,0.7,0.425
