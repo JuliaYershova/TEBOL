@@ -56,24 +56,30 @@ def bootstrap_ci(stem: np.ndarray, y_true: np.ndarray, p_pos: np.ndarray,
             float(np.quantile(vals, 1 - alpha / 2)))
 
 
-def nadeau_bengio(diffs: np.ndarray, n_train: int,
-                  n_test: int) -> tuple[float, float]:
+def nadeau_bengio(diffs: np.ndarray, n_train: int, n_test: int,
+                  alpha: float = 0.05) -> tuple[float, float, float]:
     """Corrected resampled t-test over per-fold differences.
 
     `diffs` is one paired difference per fold (across every repeat). Returns
-    (t, two-sided p). The correction is the `n_test/n_train` term; without it
-    this is the ordinary paired t-test and is anti-conservative.
+    (t, two-sided p, half-width of the 1 - alpha interval for the mean
+    difference). The p-value and the half-width share one corrected standard
+    error, so an interval that excludes zero always sits beside p < alpha. The
+    correction is the `n_test/n_train` term; without it this is the ordinary
+    paired t-test and is anti-conservative.
     """
     d = np.asarray(diffs, dtype=float)
     d = d[np.isfinite(d)]
     k = len(d)
     if k < 2:
-        return float("nan"), float("nan")
+        return float("nan"), float("nan"), float("nan")
     var = d.var(ddof=1)
     if var == 0:
-        return (float("inf") if d.mean() else 0.0), (0.0 if d.mean() else 1.0)
-    t = d.mean() / np.sqrt(var * (1.0 / k + n_test / n_train))
-    return float(t), float(2 * stats.t.sf(abs(t), df=k - 1))
+        return ((float("inf") if d.mean() else 0.0),
+                (0.0 if d.mean() else 1.0), 0.0)
+    se = np.sqrt(var * (1.0 / k + n_test / n_train))
+    t = d.mean() / se
+    h = se * stats.t.ppf(1 - alpha / 2, df=k - 1)
+    return float(t), float(2 * stats.t.sf(abs(t), df=k - 1)), float(h)
 
 
 def wilcoxon(diffs: np.ndarray) -> tuple[float, float]:

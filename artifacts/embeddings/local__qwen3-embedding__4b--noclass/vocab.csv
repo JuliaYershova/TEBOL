@@ -362,7 +362,7 @@ accompanist,359,18,acousticguitar_violin:18
 accompanying,360,11,acousticguitar_violin:5|hotpot_vase:6
 accordion,361,172,acousticguitar_violin:172
 accurate,362,1,acousticguitar_violin:1
-acoustic,363,4955,acousticguitar_violin:4955
+acoustic,363,4769,acousticguitar_violin:4769
 acoustic-electric,364,454,acousticguitar_violin:454
 acoustic-lean,365,18,acousticguitar_violin:18
 acoustic-stand,366,12,acousticguitar_violin:12
@@ -2042,7 +2042,7 @@ clash,2039,3,ant_bee:3
 clasps,2040,34,acousticguitar_violin:33|hotpot_vase:1
 class,2041,280,acousticguitar_violin:244|ambulance_firetruck:34|hotpot_vase:2
 classic,2042,12341,acousticguitar_violin:8677|ambulance_firetruck:3260|ant_bee:10|cucumber_zucchini:28|hotpot_vase:366
-classical,2043,2022,acousticguitar_violin:1776|ambulance_firetruck:35|hotpot_vase:211
+classical,2043,2013,acousticguitar_violin:1767|ambulance_firetruck:35|hotpot_vase:211
 classmates,2044,33,acousticguitar_violin:33
 classroom,2045,393,acousticguitar_violin:392|hotpot_vase:1
 clawed,2046,9,hotpot_vase:9
@@ -3301,7 +3301,7 @@ emerge,3298,117,acousticguitar_violin:3|ambulance_firetruck:14|ant_bee:80|cucumb
 emergence,3299,8,ant_bee:8
 emergencias,3300,18,ambulance_firetruck:18
 emergencies,3301,104,ambulance_firetruck:104
-emergency,3302,20017,ambulance_firetruck:20017
+emergency,3302,19144,ambulance_firetruck:19144
 emergenza,3303,107,ambulance_firetruck:107
 emerges,3304,194,acousticguitar_violin:1|ambulance_firetruck:3|ant_bee:149|cucumber_zucchini:12|hotpot_vase:29
 emerging,3305,303,ambulance_firetruck:7|ant_bee:222|cucumber_zucchini:58|hotpot_vase:16
@@ -3677,7 +3677,7 @@ finishes,3674,1090,acousticguitar_violin:988|ambulance_firetruck:1|hotpot_vase:1
 finishing,3675,17,acousticguitar_violin:15|hotpot_vase:2
 finland,3676,1,ambulance_firetruck:1
 finnish,3677,17,ambulance_firetruck:17
-fire,3678,19249,acousticguitar_violin:40|ambulance_firetruck:19037|ant_bee:62|cucumber_zucchini:13|hotpot_vase:97
+fire,3678,18357,acousticguitar_violin:40|ambulance_firetruck:18145|ant_bee:62|cucumber_zucchini:13|hotpot_vase:97
 fire-department,3679,1,ambulance_firetruck:1
 fire-ems,3680,28,ambulance_firetruck:28
 fire-engine,3681,1,ambulance_firetruck:1
@@ -7730,7 +7730,7 @@ republic,7727,2,ambulance_firetruck:2
 repurposed,7728,150,ambulance_firetruck:104|hotpot_vase:46
 request,7729,23,acousticguitar_violin:7|ambulance_firetruck:1|ant_bee:3|cucumber_zucchini:9|hotpot_vase:3
 requested,7730,18,acousticguitar_violin:3|ambulance_firetruck:1|ant_bee:2|cucumber_zucchini:4|hotpot_vase:8
-rescue,7731,3002,ambulance_firetruck:2996|ant_bee:6
+rescue,7731,2957,ambulance_firetruck:2951|ant_bee:6
 rescue999,7732,16,ambulance_firetruck:16
 rescuer,7733,6,ambulance_firetruck:6
 rescuers,7734,5,ambulance_firetruck:5
@@ -9913,9 +9913,9 @@ veggie-bagel,9910,1,cucumber_zucchini:1
 veggie-loaded,9911,5,cucumber_zucchini:5
 veggie-packed,9912,1,cucumber_zucchini:1
 veggies,9913,538,cucumber_zucchini:365|hotpot_vase:173
-vehicle,9914,6748,acousticguitar_violin:1|ambulance_firetruck:6741|cucumber_zucchini:4|hotpot_vase:2
+vehicle,9914,6427,acousticguitar_violin:1|ambulance_firetruck:6420|cucumber_zucchini:4|hotpot_vase:2
 vehicle-loading,9915,1,ambulance_firetruck:1
-vehicles,9916,3261,acousticguitar_violin:14|ambulance_firetruck:3184|ant_bee:22|cucumber_zucchini:39|hotpot_vase:2
+vehicles,9916,2660,acousticguitar_violin:14|ambulance_firetruck:2583|ant_bee:22|cucumber_zucchini:39|hotpot_vase:2
 vein,9917,155,ant_bee:143|hotpot_vase:12
 veined,9918,198,ant_bee:145|cucumber_zucchini:47|hotpot_vase:6
 veining,9919,181,ant_bee:81|cucumber_zucchini:3|hotpot_vase:97

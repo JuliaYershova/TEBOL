@@ -8,6 +8,8 @@ separate three effects that the naive setup confounds:
     tags                     the human ImageNet-Captions tags
     caption_tagsub           descriptions, on the images tags cover
     caption_noclass_tagsub   ditto, class name removed
+    gpt4o                    the original GPT-4o descriptions at seven words,
+                             with the ada-002 vectors they were embedded with
 
 `caption` vs `caption_noclass` measures leakage: 85% of captions name their own
 class, so a classifier scoring 0.99 may be reading the label off the caption.
@@ -55,6 +57,10 @@ TAG_SETUP = 0
 
 EMB_FULL = "local__qwen3-embedding__4b"
 EMB_NOCLASS = "local__qwen3-embedding__4b--noclass"
+#: the original GPT-4o run: its stored descriptions and its stored ada-002 word
+#: vectors, rebuilt by scripts/build_gpt4o_inputs.py
+EMB_GPT4O = "openai__text-embedding-ada-002"
+GPT4O_SETUP = 7
 
 
 @dataclass(frozen=True)
@@ -79,6 +85,7 @@ ARMS: dict[str, Arm] = {
         Arm("tags", EMB_FULL, "index_tags", (TAG_SETUP,), False),
         Arm("caption_tagsub", EMB_FULL, "index", CAPTION_SETUPS, True),
         Arm("caption_noclass_tagsub", EMB_NOCLASS, "index", CAPTION_SETUPS, True),
+        Arm("gpt4o", EMB_GPT4O, "index", (GPT4O_SETUP,), False),
     )
 }
 

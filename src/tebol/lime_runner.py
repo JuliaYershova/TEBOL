@@ -24,6 +24,21 @@ from scipy.special import expit
 SENTINEL = "UNKWORDZ"
 
 
+def _word_weights(exp, words: list[str], label: int,
+                  absolute: bool = False) -> np.ndarray:
+    """Spread bag-of-words weights back onto sentence positions.
+
+    With bow=True, `exp.as_map()` keys are ids into LIME's vocabulary of unique
+    words (first-occurrence order), not positions in the sentence. Reading them
+    as positions shifts every weight after the first repeated word, so look the
+    id up as a word and give that weight to every occurrence of it.
+    """
+    idx = exp.domain_mapper.indexed_string
+    by_word = {idx.word(fid): (abs(wt) if absolute else wt)
+               for fid, wt in exp.as_map()[label]}
+    return np.array([by_word.get(tok, 0.0) for tok in words], dtype=float)
+
+
 def explain_one(words: list[str], z: np.ndarray, bias: float,
                 toward_pos: bool, num_samples: int, seed: int,
                 legacy: bool = False, bow: bool = False) -> np.ndarray:
@@ -67,23 +82,22 @@ def explain_one(words: list[str], z: np.ndarray, bias: float,
         expl = LimeTextExplainer(random_state=seed)
         exp = expl.explain_instance(" ".join(words), predict, labels=(1,),
                                     num_features=15, num_samples=num_samples)
-        w = np.zeros(n)
-        m = dict(exp.as_map()[1])
-        for i in range(n):
-            w[i] = abs(m.get(i, 0.0))
-        return w
+        return _word_weights(exp, words, 1, absolute=True)
 
     # bow=False makes each position its own feature; bow=True is LIME's own
     # default and removes every occurrence of a word together, which loses the
     # distinction between two copies of the same word. Both are defensible and
     # both are run; the weights stay signed and the predicted class is the one
     # explained either way, so only the tokenisation differs.
-    expl = LimeTextExplainer(bow=bow, random_state=seed,
-                             split_expression=r"\W+" if bow else r"\s+")
+    # \s+ in both modes: the \W+ default would split "blue-and-white" into
+    # tokens that predict()'s t.split() never finds.
+    expl = LimeTextExplainer(bow=bow, random_state=seed, split_expression=r"\s+")
     label = 1 if toward_pos else 0
     exp = expl.explain_instance(" ".join(words), predict, labels=(label,),
                                 num_features=n, num_samples=num_samples)
 
+    if bow:
+        return _word_weights(exp, words, label)
     w = np.zeros(n)
     for pos, weight in exp.as_map()[label]:
         if 0 <= pos < n:

@@ -307,6 +307,17 @@ def main() -> None:
     lead = ["pair", "arm", "setup", "level", "repeat", "fold"]
     folds_df = pd.DataFrame(all_rows)
     folds_df = folds_df[lead + [c for c in folds_df.columns if c not in lead]]
+    # a partial run (--pair / --arm / --setup) replaces only the configurations
+    # it fitted and keeps every other row; a full run replaces them all
+    old_path = METRICS_DIR / "folds.csv"
+    if old_path.exists():
+        keys = ["pair", "arm", "setup"]
+        prev = pd.read_csv(old_path)
+        fresh = set(map(tuple, folds_df[keys].astype(str).drop_duplicates().to_numpy()))
+        keep = ~prev[keys].astype(str).apply(tuple, axis=1).isin(fresh)
+        folds_df = pd.concat([prev[keep], folds_df], ignore_index=True)
+        folds_df = folds_df.sort_values(keys + ["level", "repeat", "fold"],
+                                        kind="stable", ignore_index=True)
     folds_df.to_csv(METRICS_DIR / "folds.csv", index=False)
     summarise(folds_df).to_csv(METRICS_DIR / "summary.csv", index=False)
 

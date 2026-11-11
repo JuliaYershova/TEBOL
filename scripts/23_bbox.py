@@ -84,6 +84,7 @@ import sys
 import time
 from pathlib import Path
 
+import numpy as np
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -119,10 +120,16 @@ def top_words(pair: str, arm: str, setup: str, k: int) -> dict[str, list[str]]:
     f = EXPL / EMB[arm] / pair / arm / setup / "smer_words.parquet"
     if not f.exists():
         sys.exit(f"missing {f}")
-    d = pd.read_parquet(f, columns=["stem", "cls", "word", "z", "pred_class"])
+    d = pd.read_parquet(f, columns=["stem", "cls", "word", "z", "sent_prob", "rep", "repeat", "fold"])
 
     pos = sorted(d["cls"].unique())[1]          # as in 03_train_smer.py
-    d["signed"] = d["z"].where(d["pred_class"] == pos, -d["z"])
+    # orient by the image's final prediction (mean probability over its
+    # captions, as evaluate.by_image), not by each caption's own: a word from a
+    # minority caption would otherwise score as supporting a class the image
+    # is not predicted to be.
+    p_img = (d.groupby(["stem", "rep", "repeat", "fold"])["sent_prob"].first()
+              .groupby("stem").mean())
+    d["signed"] = d["z"].where(d["stem"].map(p_img) >= 0.5, -d["z"])
 
     g = (d.groupby(["stem", "word"], as_index=False)["signed"].mean()
            .sort_values(["stem", "signed"], ascending=[True, False],
@@ -198,6 +205,15 @@ def generate(args) -> None:
     model_name = "dry-run" if args.dry_run else cap.name
     path = out_path(args.pair, args.arm, args.setup, model_name)
     already = set() if args.dry_run else done_keys(path)
+    if args.refresh_changed:
+        # the stored prompt names words that are no longer this image's top
+        # words (the ranking changed); ask again for exactly those
+        stale = {(r["stem"], r.get("rep", 0))
+                 for r in read_rows(args.pair, args.arm, args.setup,
+                                    parsed_only=False)
+                 if r["stem"] in words
+                 and list(r["features"]) != list(words[r["stem"]])}
+        already -= stale
 
     n_scorable = len(stems)
     if args.limit:
@@ -251,7 +267,7 @@ def generate(args) -> None:
                                   "raw": item["box"]})
             if raw and not boxes:
                 err = "every box fell outside the image after rescaling"
-            box = boxes[0]["box"] if boxes else None
+            box = top_box(feats, boxes)
 
             row = {"stem": stem, "rep": rep, "pair": args.pair, "class": cls,
                    "arm": args.arm, "setup": args.setup, "top_k": args.top_k,
@@ -384,6 +400,20 @@ def draw(args) -> None:
     print(f"wrote {len(rows)} overlays to {out_dir}")
 
 
+def top_box(feats, boxes):
+    """The box for the top word, or None.
+
+    When the reply names its boxes, take the one labelled with that word; a
+    refused or unlabelled top word is a failed localisation, not a licence to
+    score the next word's box instead (parse_boxes drops "word1: 0, 0, 0, 0",
+    which would otherwise promote word 2's box to position 0).
+    """
+    if any(b["label"] for b in boxes):
+        top = feats[0].lower()
+        return next((b["box"] for b in boxes if b["label"] == top), None)
+    return boxes[0]["box"] if boxes else None
+
+
 def read_rows(pair: str, arm: str, setup: str, parsed_only: bool = True):
     """Rows for one cell, one per (stem, rep).
 
@@ -398,9 +428,16 @@ def read_rows(pair: str, arm: str, setup: str, parsed_only: bool = True):
             if not line.strip():
                 continue
             r = json.loads(line)
+            # re-derived from the stored boxes, so runs made before the
+            # top-word fix need no regeneration
+            if "boxes" in r:
+                r["box"] = top_box(r["features"], r["boxes"])
             key = (r["stem"], r.get("rep", 0))
             prev = best.get(key)
-            if prev is None or r.get("box") or not prev.get("box"):
+            # a later reply that parsed replaces an earlier one; one that did
+            # not parse never replaces one that did. "parsed" is having boxes,
+            # not having a top-word box: a refused top word is an answer.
+            if prev is None or r.get("boxes") or not prev.get("boxes"):
                 best[key] = r
     rows = list(best.values())
     return [r for r in rows if r.get("box")] if parsed_only else rows
@@ -561,6 +598,7 @@ def table(args) -> None:
                 "x1": b[2] if b else float("nan"),
                 "y1": b[3] if b else float("nan"),
                 "width": r["width"], "height": r["height"],
+                "n_truth": len(r["truth"]),
             })
             # per-word attribution needs the model to have labelled its boxes
             labels = {x["label"] for x in r.get("boxes", []) if x["label"]}
@@ -573,7 +611,7 @@ def table(args) -> None:
                     "position": i + 1, "reply_parsed": bool(b),
                     "labelled": bool(labels or refused),
                     "got_box": w in labels,
-                    "refused": w in refused,
+                    "refused": (w in refused) and (w not in labels),
                     "absent": not (w in labels or w in refused),
                 })
     if not recs:
@@ -581,6 +619,17 @@ def table(args) -> None:
     df, wdf = pd.DataFrame(recs), pd.DataFrame(wrecs)
     MET = ROOT / "results" / "metrics"
     MET.mkdir(parents=True, exist_ok=True)
+
+    # mean IoU by how many objects the annotation marks, over the calls that
+    # returned a box for the top word
+    objs = df.assign(objects=np.where(df.n_truth >= 3, "3+",
+                                      df.n_truth.astype(str)))
+    by_obj = objs.groupby("objects").agg(
+        images=("stem", "nunique"), calls=("iou", "size"),
+        with_box=("iou", "count"), iou_mean=("iou", "mean"))
+    by_obj.to_csv(MET / "bbox_by_objects.csv")
+    print("\nmean IoU by number of annotated objects\n")
+    print(by_obj.round(3).to_string())
 
     def rows_for(keys):
         out = []
@@ -654,8 +703,15 @@ def table(args) -> None:
                  absent=("absent", "sum"))
             .assign(refused_pct=lambda d: 100 * d.refused / d.in_top3,
                     no_box_pct=lambda d: 100 * (d.refused + d.absent) / d.in_top3)
-            .query(f"in_top3 >= {args.min_word_n} and (refused + absent) > 0")
             .sort_values("no_box_pct", ascending=False))
+    # boxed + refused + absent == in_top3 by construction; the denominator is
+    # the whole labelled subset, before the per-word filter below.
+    tot = {c: int(w[c].sum()) for c in ("in_top3", "boxed", "refused", "absent")}
+    print(f"\nlabelled top-3 word occurrences (before the per-word filter): "
+          f"{tot['in_top3']:,} = {tot['boxed']:,} boxed + {tot['refused']:,} "
+          f"refused + {tot['absent']:,} absent")
+    pd.Series(tot).to_csv(MET / "bbox_words_totals.csv", header=["n"])
+    w = w.query(f"in_top3 >= {args.min_word_n} and (refused + absent) > 0")
     w.to_csv(MET / "bbox_words_no_coords.csv")
     print(f"\ntop-3 words the model gave no coordinates for\n")
     print(f"  Attribution needs the reply to name its boxes, which {share:.0f}% do;"
@@ -709,6 +765,9 @@ def main() -> None:
                         "usually when a stop word made the model argue first")
     g.add_argument("--retry-failed", action="store_true",
                    help="re-ask only the calls whose reply could not be parsed")
+    g.add_argument("--refresh-changed", action="store_true",
+                   help="also re-ask the calls whose stored prompt no longer "
+                        "matches the image's current top words")
     g.add_argument("--coord-space", type=int, default=B.COORD_SPACE,
                    help="grid the model answers on; 1000 for Qwen3-VL, "
                         "pass the image size for a model that replies in pixels")

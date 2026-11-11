@@ -34,6 +34,8 @@ import sys
 from pathlib import Path
 
 import numpy as np
+
+FONTSCALE = [1.0]
 import pandas as pd
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -100,7 +102,7 @@ def panel(ax, x, series, tags, mark, delta):
                     markeredgecolor=color, markeredgewidth=1.6, zorder=4)
 
     ax.set_xticks(x)
-    ax.set_xticklabels(LENGTHS, fontsize=7.5)
+    ax.set_xticklabels(LENGTHS, fontsize=7.5 * FONTSCALE[0])
     ax.tick_params(axis="y", labelsize=8)
     ax.grid(alpha=0.3, linewidth=0.5)
     ax.set_axisbelow(True)
@@ -125,6 +127,12 @@ def main() -> None:
                     help="tolerance in accuracy POINTS for the shortest-within pick")
     ap.add_argument("--mark", action="store_true",
                     help="ring the shortest-within-delta length on each curve")
+    ap.add_argument("--fontscale", type=float, default=1.0,
+                    help="multiply every font size; <1 shrinks for print")
+    ap.add_argument("--no-suptitle", action="store_true",
+                    help="omit the figure title; the LaTeX caption carries it")
+    ap.add_argument("--cols", type=int, default=0,
+                    help="wrap panels into this many columns; 0 = one row")
     ap.add_argument("--sharey", action="store_true",
                     help="one y range for all pairs (default: per-pair range)")
     ap.add_argument("--arms", nargs="*", default=["caption"],
@@ -135,6 +143,7 @@ def main() -> None:
                     help="draw the tags-only reference line (it is mostly the "
                          "class name, so it is off by default)")
     args = ap.parse_args()
+    FONTSCALE[0] = args.fontscale
     for arm in args.arms:
         if arm not in ARMS:
             raise SystemExit(f"unknown arm {arm!r}; choose from {', '.join(ARMS)}")
@@ -155,7 +164,9 @@ def main() -> None:
     pairs = sorted(s[s.arm == "caption"].pair.unique())
     x = np.array(LENGTHS, dtype=float)
     xlab = "Caption length (words)"
-    ylab = f"{args.metric.replace('_', ' ')} ({args.level} level)"
+    ylab = (f"{args.level.title()}-level {args.metric.replace('_', ' ')}"
+            if args.level in ("image", "caption")
+            else f"{args.metric.replace('_', ' ')} ({args.level} level)")
 
     stem = "_".join(args.arms) if len(args.arms) < 3 else "all_arms"
     if args.fits:
@@ -194,19 +205,26 @@ def main() -> None:
     print(f"wrote {M / f'{args.metric}_vs_length.csv'}")
 
     # ---- all pairs, all arms, one row ----
-    fig, axes = plt.subplots(1, len(pairs), figsize=(3.3 * len(pairs), 3.5),
-                             sharey=args.sharey)
-    for ax, pair in zip(np.atleast_1d(axes), pairs):
+    ncol = args.cols or len(pairs)
+    nrow = -(-len(pairs) // ncol)
+    fig, axes = plt.subplots(nrow, ncol, figsize=(2.3 * ncol, 2.2 * nrow),
+                             sharey=args.sharey, squeeze=False)
+    flat = axes.ravel()
+    for ax in flat[len(pairs):]:
+        ax.axis("off")
+    for ax, pair in zip(flat, pairs):
         panel(ax, x, *cells[pair], args.mark, args.delta)
-        ax.set_title(pair.replace("_", " / "), fontsize=9.5)
-        ax.set_xlabel(xlab, fontsize=8.5)
-    np.atleast_1d(axes)[0].set_ylabel(ylab, fontsize=9)
-    h, l = np.atleast_1d(axes)[0].get_legend_handles_labels()
+        ax.set_title(pair.replace("_", " / "), fontsize=9.5 * args.fontscale)
+        ax.set_xlabel(xlab, fontsize=8.5 * args.fontscale)
+    for r in range(nrow):
+        flat[r * ncol].set_ylabel(ylab, fontsize=9 * args.fontscale)
+    h, l = flat[0].get_legend_handles_labels()
     if len(l) > 1:
-        fig.legend(h, l, loc="lower center", ncol=len(l), fontsize=8.5,
+        fig.legend(h, l, loc="lower center", ncol=len(l), fontsize=8.5 * args.fontscale,
                    frameon=False, bbox_to_anchor=(0.5, -0.08))
-    fig.suptitle(f"{args.metric.replace('_', ' ').title()} by caption length",
-                 fontsize=11, y=1.02)
+    if not args.no_suptitle:
+        fig.suptitle(f"{args.metric.replace('_', ' ').title()} by caption length",
+                     fontsize=11 * args.fontscale, y=1.02)
     fig.tight_layout()
     save(fig, f"{args.metric}_{stem}")
     plt.close(fig)

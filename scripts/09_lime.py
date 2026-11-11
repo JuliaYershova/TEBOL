@@ -140,6 +140,9 @@ def main() -> None:
     ap.add_argument("--bow", action="store_true",
                     help="LIME's default bag-of-words tokenisation: one "
                          "feature per distinct word, all copies removed at once")
+    ap.add_argument("--setup", action="append", type=int,
+                    help="only this caption length (repeatable; 0 = tags); "
+                         "default every length the arm has")
     ap.add_argument("--legacy", action="store_true",
                     help="reproduce the Diplom notebook's LIME settings: "
                          "bow=True, abs(), labels=(1,), num_features=15")
@@ -149,6 +152,8 @@ def main() -> None:
         print(pair)
         for arm in args.arm or list(arms_mod.ARMS):
             for setup in arms_mod.ARMS[arm].setups:
+                if args.setup is not None and setup not in args.setup:
+                    continue
                 print("   ", run_config(pair, arm, setup, args.n,
                                         args.num_samples, args.jobs,
                                         args.overwrite, args.legacy, args.bow))
