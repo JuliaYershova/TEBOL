@@ -1,0 +1,16 @@
+{
+  "model": "openai:text-embedding-ada-002",
+  "dim": 1536,
+  "aggregation": "mean",
+  "l2_normalized": true,
+  "caption_model": "gpt-4o",
+  "source": "stored descriptions and stored per-word ada-002 vectors of the original run; occurrences of a token averaged",
+  "setup": 7,
+  "embedded_now": [
+    {
+      "pair": "cucumber_zucchini",
+      "tokens_from_api": 698,
+      "tokens_reusing_stored": 838
+    }
+  ]
+}
