@@ -32,7 +32,7 @@ The whole pipeline on one photograph, end to end, is in
 | which 14,351 images | the `stem` field of every row of `artifacts/captions/<pair>/*.jsonl.gz` | ImageNet synset and image identifier |
 | Qwen3-VL descriptions | `artifacts/captions/` | gzip, one row per image, length and repetition |
 | GPT-4o configuration | `artifacts/embeddings/openai__text-embedding-ada-002/` | the original run's stored descriptions and ada-002 word vectors, rebuilt for the pipeline by `scripts/build_gpt4o_inputs.py`; for cucumber / zucchini 838 of 1,536 words reuse stored ada-002 vectors and 698 were embedded afresh (`scripts/embed_tokens_ada.py`) |
-| user study | `results/metrics/survey_stats.csv`, `survey_counts.csv`, written by `scripts/survey_stats.py` | aggregates of the 270 submitted responses; the LimeSurvey export holds individual answers and free-text comments and is not part of the repository |
+| user study | `results/metrics/survey_stats.csv`, `survey_counts.csv`, written by `scripts/survey_stats.py` | aggregates of the 270 submitted responses and of the coded free-text comments (`data/manifest/survey_comment_codes.csv`, codes only); the LimeSurvey export holds individual answers and free-text comments and is not part of the repository |
 | word vectors, explanations, results | `artifacts/`, `results/` | what the scripts above write |
 
 `scripts/qualitative_figures.py` draws the LIME and Grad-CAM figures of the paper and `scripts/lime_figure_checks.py`
