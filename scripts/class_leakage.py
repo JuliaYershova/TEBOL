@@ -44,7 +44,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "src"))
 
-from tebol.captions_io import load_rows  # noqa: E402
+from tebol.captions_io import caption_files, load_rows  # noqa: E402
 
 CAPTIONS = ROOT / "artifacts" / "captions"
 TERMS = ROOT / "data" / "manifest" / "class_terms.csv"
@@ -110,8 +110,8 @@ def main() -> None:
     # <model>--noclass.jsonl beside the original, and feeding that back in would
     # write <model>--noclass--noclass.jsonl and halve the reported rate by
     # counting already-stripped captions as captions that never named the class
-    files = sorted(p for p in CAPTIONS.glob("*/*.jsonl")
-                   if not p.stem.endswith(NOCLASS))
+    files = sorted(p for pair_dir in CAPTIONS.iterdir() if pair_dir.is_dir()
+                   for p in caption_files(pair_dir) if not p.stem.endswith(NOCLASS))
     if not files:
         sys.exit(f"no caption files under {CAPTIONS}")
 

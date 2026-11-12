@@ -32,7 +32,7 @@ The requested length is a request, not a constraint: the model overshoots at
 every setting (asked 3, got 3.71 words on average; asked 30, got 34.40), and
 the rate at which a caption names its own class climbs with length, from 79.0%
 at 3 words to 90.0% at 30. Both are reported in
-results/metrics/class_leakage.md, and both are why length is a variable here.
+results/reports/03_class_leakage.md, and both are why length is a variable here.
 
 The heavy lifting is stage 2's: `vocab.npz` holds one vector per distinct word,
 and `index/<pair>.npz` says which vocab rows each caption uses. This module

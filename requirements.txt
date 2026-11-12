@@ -14,3 +14,14 @@ scikit-learn==1.9.0
 scipy==1.18.1
 pyarrow==25.0.1
 pytest==9.1.1
+
+# stage 3: LIME and the figures
+lime==0.2.0.1
+joblib==1.5.3
+matplotlib==3.11.1
+
+# image baselines (VGG16, ResNet, CLIP, CoCa, Grad-CAM figures)
+torch==2.14.0
+torchvision==0.29.0
+timm==1.0.30
+open_clip_torch==3.3.0

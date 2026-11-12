@@ -42,6 +42,16 @@ def load_rows(path: str | Path, keep_failed: bool = False) -> list[dict]:
     return rows
 
 
+def caption_files(directory: str | Path, pattern: str = "*") -> list[Path]:
+    """The caption files of a folder, one path per file, whether it is stored as
+    .jsonl or as the committed .jsonl.gz. Every path is spelled .jsonl, which
+    iter_raw and load_rows accept for either form."""
+    found = {p.with_suffix("") if p.suffix == ".gz" else p
+             for p in Path(directory).glob(pattern + ".jsonl*")
+             if p.suffix in (".jsonl", ".gz")}
+    return sorted(found)
+
+
 def iter_raw(path: str | Path):
     """Every line as written, including duplicates -- tolerates a torn last line.
 

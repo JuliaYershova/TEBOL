@@ -37,3 +37,30 @@ def test_iter_raw_falls_back_to_gz(tmp_path):
     with gzip.open(tmp_path / "c.jsonl.gz", "wt", encoding="utf-8") as fh:
         fh.write("\n".join(json.dumps(r) for r in rows) + "\n")
     assert list(iter_raw(tmp_path / "c.jsonl")) == rows
+
+
+def test_kendall_tau_is_computed_on_ranks_not_on_orderings():
+    """Two orderings of four words, (0, 1, 3, 2) and (0, 2, 3, 1).
+
+    stability() receives each ordering as word positions, best first. Kendall tau
+    must compare the rank every position receives; comparing the orderings
+    themselves gives a different number for the same pair.
+    """
+    import importlib.util
+    from pathlib import Path
+
+    import numpy as np
+    from scipy.stats import kendalltau
+
+    path = Path(__file__).resolve().parent.parent / "scripts" / "11_stochasticity.py"
+    spec = importlib.util.spec_from_file_location("stochasticity", path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    a = np.array([0, 1, 3, 2])   # word positions, best first
+    b = np.array([0, 2, 3, 1])
+    expected = kendalltau(np.argsort(a), np.argsort(b)).statistic
+    assert module.stability([a, b], topk=3)["tau"] == expected
+    assert expected != kendalltau(a, b).statistic
+    assert module.stability([a, a], topk=3)["tau"] == 1.0
+    assert module.stability([a, a[::-1]], topk=3)["tau"] == -1.0

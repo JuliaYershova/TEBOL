@@ -33,6 +33,11 @@ the table were produced by a model that never saw this image.
 
     python scripts/06_worked_examples.py
     python scripts/06_worked_examples.py --arm caption_noclass --setup 5
+
+The table of the paper (Table "tab:smer_lime_comparison") is one chosen caption, not the
+median one: image n02206856_1815, repetition 3, 5-word captions:
+    python scripts/06_worked_examples.py --setup 5 --stem n02206856_1815 --rep 3 \\
+        --out results/reports/06_smer_example_paper.md
 """
 
 from __future__ import annotations
@@ -74,20 +79,37 @@ def pick(df: pd.DataFrame, cls: str, n_words: int) -> pd.DataFrame | None:
     return cand[(cand.stem == stem) & (cand.rep == rep)].sort_values("pos")
 
 
-def table(ex: pd.DataFrame, store, neg: str, pos: str) -> list[str]:
-    """One class's block, words then the averaged-vector row."""
+def lime_weights(smer_path: Path, ex: pd.DataFrame) -> dict | None:
+    """LIME weight per caption position for this caption, from lime_words.parquet."""
+    path = smer_path.with_name("lime_words.parquet")
+    if not path.exists():
+        return None
+    lime = pd.read_parquet(path)
+    same = lime[(lime.stem == ex["stem"].iloc[0]) & (lime.rep == ex["rep"].iloc[0])]
+    if same.empty:
+        return None
+    return dict(zip(same["pos"], same["lime"]))
+
+
+def table(ex: pd.DataFrame, store, neg: str, pos: str,
+          lime: dict | None = None) -> list[str]:
+    """One class's block, words then the averaged-vector row.
+
+    `lime` maps caption position to the LIME weight of the same caption, if known.
+    """
     bias = float(ex["bias"].iloc[0])
     rows = [
         f"| Word | Embedding | z_j | b_0 | Logit lambda(w_j) "
-        f"| P({neg}) | P({pos}) |",
-        "|---|---|---:|---:|---:|---:|---:|",
+        f"| P({neg}) | P({pos}) |" + (" LIME importance |" if lime else ""),
+        "|---|---|---:|---:|---:|---:|---:|" + ("---:|" if lime else ""),
     ]
     for r in ex.itertuples():
         vec = store.vectors[store.row[r.word]]
         p_pos = float(r.word_prob)
         rows.append(
             f"| {r.word} | {embedding_preview(vec)} | {r.z:.4f} | {bias:.4f} "
-            f"| {r.z + bias:.4f} | {1 - p_pos:.4f} | {p_pos:.4f} |")
+            f"| {r.z + bias:.4f} | {1 - p_pos:.4f} | {p_pos:.4f} |"
+            + (f" {lime[r.pos]:.4f} |" if lime else ""))
 
     z_mean = float(ex["z"].mean())
     logit = float(ex["sent_logit"].iloc[0])
@@ -95,7 +117,8 @@ def table(ex: pd.DataFrame, store, neg: str, pos: str) -> list[str]:
     mean_vec = np.mean([store.vectors[store.row[w]] for w in ex["word"]], axis=0)
     rows += [
         f"| **SAVe(caption)** | {embedding_preview(mean_vec)} | {z_mean:.4f} "
-        f"| {bias:.4f} | {logit:.4f} | {1 - p_pos:.4f} | {p_pos:.4f} |",
+        f"| {bias:.4f} | {logit:.4f} | {1 - p_pos:.4f} | {p_pos:.4f} |"
+        + (" N/A |" if lime else ""),
     ]
     return rows
 
@@ -105,6 +128,10 @@ def main() -> None:
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--arm", default="caption", choices=sorted(arms_mod.ARMS))
     ap.add_argument("--setup", type=int, default=7)
+    ap.add_argument("--stem", default=None,
+                    help="show this image (e.g. n02206856_1815) instead of the median caption")
+    ap.add_argument("--rep", type=int, default=0,
+                    help="repetition of --stem to show")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -120,9 +147,11 @@ def main() -> None:
         "`SAVe`, and its `z` is the mean of the column above it -- so "
         "`mean(z_j) + b_0` is the caption logit exactly.",
         "",
-        "Captions are chosen mechanically: the median correctly-classified "
-        "caption of each class at this length. Coefficients come from the "
-        "cross-validation fold that held the caption out.",
+        (f"The caption is image {args.stem}, repetition {args.rep}. " if args.stem else
+         "Captions are chosen mechanically: the median correctly-classified "
+         "caption of each class at this length. ")
+        + "Coefficients come from the cross-validation fold that held the "
+        "caption out.",
         "",
     ]
 
@@ -137,7 +166,12 @@ def main() -> None:
         neg, pos = sorted(set(df["cls"]))
 
         for cls in (neg, pos):
-            ex = pick(df, cls, args.setup)
+            if args.stem:
+                ex = df[(df.stem == args.stem) & (df.rep == args.rep)
+                        & (df.cls == cls)].sort_values("pos")
+                ex = ex if len(ex) else None
+            else:
+                ex = pick(df, cls, args.setup)
             if ex is None:
                 continue
             caption = " ".join(ex["word"])
@@ -151,7 +185,7 @@ def main() -> None:
                 f"Predicted **{ex['pred_class'].iloc[0]}** "
                 f"at P = {max(float(ex['sent_prob'].iloc[0]), 1 - float(ex['sent_prob'].iloc[0])):.4f}.",
                 "",
-                *table(ex, data.store, neg, pos),
+                *table(ex, data.store, neg, pos, lime_weights(path, ex)),
                 "",
             ]
 
