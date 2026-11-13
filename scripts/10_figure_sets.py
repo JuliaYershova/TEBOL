@@ -28,6 +28,7 @@ information and forces the y-axis to zero, compressing everything above it.
 
     python scripts/10_figure_sets.py
     python scripts/10_figure_sets.py --pair hotpot_vase
+    python scripts/10_figure_sets.py --grid 04_full_vs_without_synonyms --overlay
 """
 
 from __future__ import annotations
@@ -476,6 +477,10 @@ def main() -> None:
     ap.add_argument("--xlabel", default=None,
                     help="override the x-axis label (tag arms remove tags, "
                          "not words)")
+    ap.add_argument("--overlay", action="store_true",
+                    help="for --grid: draw LIME as a thin dashed line with hollow "
+                         "markers over SMER's thick line, so both stay visible "
+                         "where the curves coincide (used for the paper's Figures 6 and 7)")
     ap.add_argument("--smer-only", action="store_true",
                     help="plot SMER alone; use when LIME coincides with it")
     ap.add_argument("--fontscale", type=float, default=0.85)
@@ -542,7 +547,7 @@ def main() -> None:
                     OUT / (f"grid_{args.grid}_" +
                            ("smer" if args.smer_only else args.lime)), plt,
                     args.lime, args.cols, args.fontscale,
-                    args.smer_only, args.xlabel)
+                    args.smer_only, args.xlabel, args.overlay)
         return
 
     if OUT.exists() and not args.keep_old:

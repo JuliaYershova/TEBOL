@@ -24,7 +24,8 @@ length setting, 7, and a single repetition.
 
 Class labels are taken from the Qwen3-VL index of the same image, so both
 configurations name a class identically and share its folds. The image sets
-are identical (checked: 2,866 of 2,866 for ambulance / firetruck).
+are identical for three pairs (e.g. 2,866 of 2,866 for ambulance / firetruck); two Qwen3-VL images
+(n07718472_4521, n07590611_10775) have no stored GPT-4o description.
 
     python scripts/build_gpt4o_inputs.py
     python scripts/build_gpt4o_inputs.py --pair ant_bee
