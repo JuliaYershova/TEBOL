@@ -11,6 +11,10 @@
       "pair": "cucumber_zucchini",
       "tokens_from_api": 698,
       "tokens_reusing_stored": 838
+    },
+    {
+      "pair": "added descriptions",
+      "tokens_from_api": 1
     }
   ]
 }

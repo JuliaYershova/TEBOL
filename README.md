@@ -44,7 +44,12 @@ tests them; `scripts/survey_gradcam.py` computes the survey's Grad-CAM heatmaps 
 
 Each baseline answers the same question as the pipeline, with one step of it
 taken away, so the accuracy it loses is what that step contributes. All are
-scored on the same images, the same 5 × 5 folds and the same image-level rule.
+scored on the same images, the same 5 × 5 folds and the same image-level rule (for the GPT-4o
+configuration, 14,349 of the 14,351 images have a description from the original run. The other two,
+`n07718472_4521` and `n07590611_10775`, were described later, on 2026-11-18 with `gpt-4o-2024-08-06`,
+by `scripts/describe_missing_gpt4o.py`; their text, model snapshot and timestamps are in
+`data/gpt4o_added/descriptions.csv`, and `scripts/build_gpt4o_inputs.py --added` adds them.
+The GPT-4o rows cover all 14,351 images).
 
 | baseline | what it does | phase compared |
 |---|---|---|
@@ -79,8 +84,8 @@ python scripts/24_baselines.py table
 The decomposition does not depend on there being two classes: it needs mean
 pooling and the logit to be linear, and both hold for any number. Run on
 cucumber, zucchini and hotpot, one-vs-rest so each class gets its own weight
-vector and each word one score per class, it rebuilds every logit to 5e-06 —
-float32 rounding. Image-level accuracy 0.9500 ±.003, and hotpot is 99.6%
+vector and each word one score per class, it rebuilds every logit to 8e-06 —
+float32 rounding (largest gap over every held-out description, `results/metrics/decomposition_gap.csv`). Image-level accuracy 0.9500 ±.003, and hotpot is 99.6%
 correct while the two vegetables take 6.0% and 5.5% of each other.
 
 Worked example: [`notebooks/tebol_multiclass.ipynb`](notebooks/tebol_multiclass.ipynb).
