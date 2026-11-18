@@ -45,8 +45,11 @@ tests them; `scripts/survey_gradcam.py` computes the survey's Grad-CAM heatmaps 
 Each baseline answers the same question as the pipeline, with one step of it
 taken away, so the accuracy it loses is what that step contributes. All are
 scored on the same images, the same 5 × 5 folds and the same image-level rule (for the GPT-4o
-configuration two images of the Qwen3-VL set have no stored GPT-4o description, so its pipeline row is
-scored on 14,349 images).
+configuration, 14,349 of the 14,351 images have a description from the original run. The other two,
+`n07718472_4521` and `n07590611_10775`, were described later, on 2026-11-18 with `gpt-4o-2024-08-06`,
+by `scripts/describe_missing_gpt4o.py`; their text, model snapshot and timestamps are in
+`data/gpt4o_added/descriptions.csv`, and `scripts/build_gpt4o_inputs.py --added` adds them.
+The GPT-4o rows cover all 14,351 images).
 
 | baseline | what it does | phase compared |
 |---|---|---|

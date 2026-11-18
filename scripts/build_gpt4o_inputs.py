@@ -27,8 +27,15 @@ configurations name a class identically and share its folds. The image sets
 are identical for three pairs (e.g. 2,866 of 2,866 for ambulance / firetruck); two Qwen3-VL images
 (n07718472_4521, n07590611_10775) have no stored GPT-4o description.
 
+Two images are missing from the stored run. `--added` appends the descriptions that
+scripts/describe_missing_gpt4o.py generated for them later (data/gpt4o_added/
+descriptions.csv). Their words reuse a stored vector where the token already has one;
+only tokens that occur nowhere in the stored run are embedded with the API, one token
+per request item, as the old run did. No stored description or vector changes.
+
     python scripts/build_gpt4o_inputs.py
     python scripts/build_gpt4o_inputs.py --pair ant_bee
+    python scripts/build_gpt4o_inputs.py --embed-missing --added
 """
 
 from __future__ import annotations
@@ -59,6 +66,24 @@ PAIR_DIR = {"ambulance_firetruck": "test_package_data1",
             "cucumber_zucchini": "test_package_data5"}
 SETUP = 7
 MODEL = "openai:text-embedding-ada-002"
+ADDED = ROOT / "data" / "gpt4o_added" / "descriptions.csv"
+
+
+def read_added(pair: str, stem_to_class: dict[str, str]):
+    """Descriptions generated later for images the stored run lacks (see --added)."""
+    csv.field_size_limit(10 ** 9)
+    records = []
+    with ADDED.open(newline="", encoding="utf-8") as fh:
+        for row in csv.DictReader(fh):
+            if row["pair"] != pair:
+                continue
+            stem = row["stem"]
+            if stem not in stem_to_class:
+                raise SystemExit(f"{pair} {stem}: not in the Qwen3-VL image set")
+            records.append({"stem": stem, "n_words": SETUP, "rep": 0,
+                            "class": stem_to_class[stem],
+                            "tokens": row["description"].split()})
+    return records
 
 
 def read_descriptions(pair: str, stem_to_class: dict[str, str]):
@@ -224,6 +249,10 @@ def main() -> None:
                     help="for a pair whose stored vectors are not ada-002, take the "
                          "stored descriptions and embed only their tokens that have "
                          "no stored vector, with the OpenAI API (OPENAI_API_KEY)")
+    ap.add_argument("--added", action="store_true",
+                    help="append the descriptions in data/gpt4o_added/descriptions.csv "
+                         "for the images the stored run lacks; tokens with no stored "
+                         "vector are embedded with the API (OPENAI_API_KEY)")
     args = ap.parse_args()
     pairs = args.pair or sorted(PAIR_DIR)
 
@@ -244,12 +273,16 @@ def main() -> None:
                 skipped.append(pair)
                 continue
             records = read_descriptions(pair, stem_to_class)
+            if args.added:
+                records += read_added(pair, stem_to_class)
             toks = sorted({t for r in records for t in r["tokens"]})
             pending.append((pair, records, toks))
             all_records[pair] = records
             print(f"  {pair}: {len(records)} stored descriptions, {len(toks)} "
                   "distinct tokens; stored vectors are not ada-002", flush=True)
             continue
+        if args.added:
+            records += read_added(pair, stem_to_class)
         missing = set(stem_to_class) - {r["stem"] for r in records}
         print(f"  {len(records)} descriptions, {len(acc)} distinct tokens, "
               f"{len(missing)} Qwen3-VL images without a GPT-4o description")
@@ -272,6 +305,16 @@ def main() -> None:
             all_acc[tok] = [vec.copy(), 1]
         embedded_now.append({"pair": pair, "tokens_from_api": len(need),
                              "tokens_reusing_stored": len(have)})
+
+    if args.added:
+        # tokens of the added descriptions that occur nowhere in the stored run
+        new = sorted({t for recs in all_records.values() for r in recs
+                      for t in r["tokens"]} - set(all_acc))
+        print(f"added descriptions: {len(new)} tokens have no stored vector", flush=True)
+        fresh = embed_with_api(new, out_dir / "_partial" / "added_api.npz")
+        for tok, vec in fresh.items():
+            all_acc[tok] = [vec.copy(), 1]
+        embedded_now.append({"pair": "added descriptions", "tokens_from_api": len(new)})
 
     keys = sorted(all_acc)
     vecs = np.stack([all_acc[k][0] / all_acc[k][1] for k in keys])

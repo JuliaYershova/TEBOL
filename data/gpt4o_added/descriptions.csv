@@ -1,0 +1,3 @@
+stem,pair,class,description,requested_model,returned_model,prompt,max_tokens,temperature,seed,finish_reason,prompt_tokens,completion_tokens,system_fingerprint,generated_utc
+n07718472_4521,cucumber_zucchini,cucumber,"Chopped cucumber pieces, light green, close-up.",gpt-4o,gpt-4o-2024-08-06,"Describe this image in 7 words. Be concise, try to maximize the information about the image.",20,,,stop,282,11,fp_315007f291,2026-11-18T09:55:02Z
+n07590611_10775,hotpot_vase,hotpot,"Stew with carrots, bread, and Guinness can.",gpt-4o,gpt-4o-2024-08-06,"Describe this image in 7 words. Be concise, try to maximize the information about the image.",20,,,stop,792,11,fp_315007f291,2026-11-18T09:55:18Z
